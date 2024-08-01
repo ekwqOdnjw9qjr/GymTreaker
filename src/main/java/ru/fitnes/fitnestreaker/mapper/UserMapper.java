@@ -2,6 +2,7 @@ package ru.fitnes.fitnestreaker.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.springframework.data.jpa.domain.Specification;
 import ru.fitnes.fitnestreaker.dto.UserDto;
 import ru.fitnes.fitnestreaker.entity.User;
 
@@ -17,6 +18,8 @@ public interface UserMapper {
     List<UserDto> toListDto(List<User> userList);
 
     List<User> toListEntity(List<UserDto> userDtoList);
+
+
 
     void merge(@MappingTarget User target, User source);
 }

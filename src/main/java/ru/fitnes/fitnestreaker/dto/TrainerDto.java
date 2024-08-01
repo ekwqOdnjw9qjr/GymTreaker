@@ -25,6 +25,9 @@ public class TrainerDto {
     @JsonProperty("specialty")
     private String specialty;
 
-    @JsonProperty("sessionsId")
-    private Set<Long> sessionsId;
+    @JsonProperty("coachingTimesIds")
+    private Set<Long> coachingTimesIds;
+
+//    @JsonProperty("sessionsId")
+//    private Set<Long> sessionsId;
 }

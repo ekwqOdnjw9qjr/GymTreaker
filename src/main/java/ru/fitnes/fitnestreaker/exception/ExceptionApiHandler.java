@@ -20,11 +20,11 @@ public class ExceptionApiHandler {
     @ExceptionHandler(Throwable.class)
     public ResponseWrapper<?> handleOtherException(Throwable t) {
         log.error("Got exception {}, message: {}", t.getClass(), t.getMessage());
-        return baseResponseService.wrapErrorResponse(new Exception(ErrorType.COMMON_ERROR, t));
+        return baseResponseService.wrapErrorResponse(new LocalException(ErrorType.COMMON_ERROR, t));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseWrapper<?> handleCurrentException(Exception ex) {
+    @ExceptionHandler(LocalException.class)
+    public ResponseWrapper<?> handleCurrentException(LocalException ex) {
         if (ex.getType() == ErrorType.NOT_FOUND) {
             log.error("Got not found exception {}, message: {}", ex.getClass(), ex.getMessage());
             return baseResponseService.wrapErrorResponse(ex);
@@ -36,6 +36,6 @@ public class ExceptionApiHandler {
     @ExceptionHandler({ConstraintViolationException.class, MethodArgumentNotValidException.class})
     public ResponseWrapper<?> handleValidationException(java.lang.Exception e) {
         log.error("Got validation exception {}, message: {}", e.getClass(), e.getMessage());
-        return baseResponseService.wrapErrorResponse(new Exception(ErrorType.CLIENT_ERROR, e));
+        return baseResponseService.wrapErrorResponse(new LocalException(ErrorType.CLIENT_ERROR, e));
     }
 }

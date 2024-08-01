@@ -9,7 +9,7 @@ import ru.fitnes.fitnestreaker.entity.Membership;
 import ru.fitnes.fitnestreaker.entity.Trainer;
 
 import java.util.List;
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = UserMapper.class)
 public interface MembershipMapper {
     @Mapping(source = "user.id", target = "userId")
     MembershipDto toDto(Membership membership);

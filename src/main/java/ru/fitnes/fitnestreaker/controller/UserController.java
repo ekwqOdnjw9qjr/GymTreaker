@@ -38,6 +38,15 @@ public class UserController {
     }
 
     @Operation(
+            summary = "User search by any available parameter",
+            description = "Allows you to download all users from the database according to the specified data"
+    )
+    @GetMapping("/search")
+    public ResponseWrapper<List<UserDto>> getAllByCriteria(UserDto userDto) {
+        return baseResponseService.wrapSuccessResponse(userService.searchUsersByAnyFields(userDto));
+    }
+
+    @Operation(
             summary = "Getting all the users",
             description = "Allows you to unload all users from the database"
     )

@@ -30,9 +30,9 @@ public class UserDto {
     @JsonProperty("password")
     private String password;
 
-    @JsonProperty("memberships")
-    private Set<Long> membershipsId;
-
-    @JsonProperty("sessionsId")
-    private Set<Long> sessionsId;
+//    @JsonProperty("memberships")
+//    private Set<Long> membershipsId;
+//
+//    @JsonProperty("sessionsId")
+//    private Set<Long> sessionsId;
 }

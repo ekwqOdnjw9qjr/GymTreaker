@@ -38,6 +38,11 @@ public class MembershipController {
         return baseResponseService.wrapSuccessResponse(membershipService.getById(id));
     }
 
+    @GetMapping("/freeze/{id}")
+    public ResponseWrapper<MembershipDto> freeze(@PathVariable  Long id, Long freezeDays) {
+        return baseResponseService.wrapSuccessResponse(membershipService.freezeMembership(id,freezeDays));
+    }
+
     @Operation(
             summary = "Getting all the memberships",
             description = "Allows you to unload all memberships from the database"
@@ -55,6 +60,11 @@ public class MembershipController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseWrapper<MembershipDto> createMembership(MembershipDto membershipDto) {
         return baseResponseService.wrapSuccessResponse(membershipService.create(membershipDto));
+    }
+
+    @GetMapping("/check/{id}")
+    public ResponseWrapper<MembershipDto> checkStatus(@PathVariable @Min(0) Long id) {
+         return baseResponseService.wrapSuccessResponse(membershipService.checkStatus(id));
     }
 
     @Operation(

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.fitnes.fitnestreaker.dto.PaymentDto;
 import ru.fitnes.fitnestreaker.entity.Payment;
 import ru.fitnes.fitnestreaker.exception.ErrorType;
-import ru.fitnes.fitnestreaker.exception.Exception;
+import ru.fitnes.fitnestreaker.exception.LocalException;
 import ru.fitnes.fitnestreaker.mapper.PaymentMapper;
 import ru.fitnes.fitnestreaker.repository.PaymentRepository;
 
@@ -20,7 +20,7 @@ public class PaymentService {
 
     public PaymentDto getById(Long id) {
         Payment payment = paymentRepository.findById(id)
-                .orElseThrow(()-> new Exception(ErrorType.NOT_FOUND,"Payment with id: " + id + " not found."));
+                .orElseThrow(()-> new LocalException(ErrorType.NOT_FOUND,"Payment with id: " + id + " not found."));
         return paymentMapper.toDto(payment);
     }
 
@@ -37,7 +37,7 @@ public class PaymentService {
 
     public PaymentDto update(PaymentDto paymentDto, Long id) {
         Payment oldPayment = paymentRepository.findById(id)
-                .orElseThrow(() -> new Exception(ErrorType.NOT_FOUND,"Payment with id: " + id + " not found."));
+                .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,"Payment with id: " + id + " not found."));
         Payment newPayment = paymentMapper.toEntity(paymentDto);
         paymentMapper.merge(oldPayment, newPayment);
         Payment savedPayment = paymentRepository.save(oldPayment);

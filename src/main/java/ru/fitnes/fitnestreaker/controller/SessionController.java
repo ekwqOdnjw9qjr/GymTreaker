@@ -6,12 +6,12 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.fitnes.fitnestreaker.baseresponse.BaseResponseService;
 import ru.fitnes.fitnestreaker.baseresponse.ResponseWrapper;
 import ru.fitnes.fitnestreaker.dto.SessionDto;
+import ru.fitnes.fitnestreaker.entity.Session;
 import ru.fitnes.fitnestreaker.service.SessionService;
 
 import java.util.List;
@@ -42,6 +42,13 @@ public class SessionController {
     @GetMapping
     public ResponseWrapper<List<SessionDto>> getAllSession() {
         return baseResponseService.wrapSuccessResponse(sessionService.getAll());
+    }
+
+    @Operation(summary = "Регистрация пациента.",
+            description = "Метод принимает в себя id-талона и  id-пациента. Возвращает зарегистрированный талон к врачу.")
+    @PatchMapping("/register/{ticketId}")
+    public Session registerPatientTicket(@PathVariable Long sessionId, @RequestParam Long userId) {
+        return sessionService.registerSession(sessionId, userId);
     }
 
     @Operation(

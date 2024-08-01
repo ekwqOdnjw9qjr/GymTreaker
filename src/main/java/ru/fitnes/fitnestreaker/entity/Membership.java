@@ -29,8 +29,15 @@ public class Membership {
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
-    @Column(name = "active")
-    private boolean active;
+//    @Column(name = "active")
+//    private boolean active;
+
+    @Column(name = "membership_status")
+    @Enumerated(EnumType.STRING)
+    private MembershipStatus membershipStatus;
+
+    @Column(name = "freezing_days")
+    private Long freezingDays;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
