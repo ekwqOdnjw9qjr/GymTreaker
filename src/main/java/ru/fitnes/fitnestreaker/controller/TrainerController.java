@@ -6,13 +6,13 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.fitnes.fitnestreaker.baseresponse.BaseResponseService;
 import ru.fitnes.fitnestreaker.baseresponse.ResponseWrapper;
-import ru.fitnes.fitnestreaker.dto.TrainerDto;
-import ru.fitnes.fitnestreaker.service.TrainerService;
+import ru.fitnes.fitnestreaker.dto.request.TrainerRequestDto;
+import ru.fitnes.fitnestreaker.dto.response.TrainerResponseDto;
+import ru.fitnes.fitnestreaker.service.impl.TrainerServiceImpl;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TrainerController {
 
-    private final TrainerService trainerService;
+    private final TrainerServiceImpl trainerServiceImpl;
     private final BaseResponseService baseResponseService;
 
     @Operation(
@@ -31,8 +31,8 @@ public class TrainerController {
             description = "Allows you to upload a trainer by ID from the database"
     )
     @GetMapping("/trainer/{id}")
-    public ResponseWrapper<TrainerDto> getTrainerById(@PathVariable @Min(0) Long id) {
-        return baseResponseService.wrapSuccessResponse(trainerService.getById(id));
+    public ResponseWrapper<TrainerResponseDto> getTrainerById(@PathVariable @Min(0) Long id) {
+        return baseResponseService.wrapSuccessResponse(trainerServiceImpl.getById(id));
     }
 
     @Operation(
@@ -40,8 +40,8 @@ public class TrainerController {
             description = "Allows you to unload all trainers from the database"
     )
     @GetMapping
-    public ResponseWrapper<List<TrainerDto>> getAllTrainer() {
-        return baseResponseService.wrapSuccessResponse(trainerService.getAll());
+    public ResponseWrapper<List<TrainerResponseDto>> getAllTrainer() {
+        return baseResponseService.wrapSuccessResponse(trainerServiceImpl.getAll());
     }
 
     @Operation(
@@ -50,8 +50,8 @@ public class TrainerController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseWrapper<TrainerDto> createTrainer(@RequestBody @Valid TrainerDto trainerDto) {
-        return baseResponseService.wrapSuccessResponse(trainerService.create(trainerDto));
+    public ResponseWrapper<TrainerRequestDto> createTrainer(@RequestBody @Valid TrainerRequestDto trainerRequestDto) {
+        return baseResponseService.wrapSuccessResponse(trainerServiceImpl.create(trainerRequestDto));
     }
 
     @Operation(
@@ -59,8 +59,8 @@ public class TrainerController {
             description = "Allows you to update trainer information in the database"
     )
     @PutMapping("/update/{id}")
-    public ResponseWrapper<TrainerDto> updateTrainer(@RequestBody @Valid TrainerDto trainerDto, @PathVariable Long id) {
-        return baseResponseService.wrapSuccessResponse(trainerService.update(trainerDto,id));
+    public ResponseWrapper<TrainerRequestDto> updateTrainer(@RequestBody @Valid TrainerRequestDto trainerRequestDto, @PathVariable Long id) {
+        return baseResponseService.wrapSuccessResponse(trainerServiceImpl.update(trainerRequestDto,id));
     }
 
     @Operation(
@@ -69,6 +69,6 @@ public class TrainerController {
     )
     @DeleteMapping("/delete/{id}")
     public void deleteTrainer(@PathVariable @Min(0) Long id) {
-        trainerService.delete(id);
+        trainerServiceImpl.delete(id);
     }
 }

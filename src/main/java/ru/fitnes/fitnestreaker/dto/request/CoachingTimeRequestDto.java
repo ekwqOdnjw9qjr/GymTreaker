@@ -1,4 +1,4 @@
-package ru.fitnes.fitnestreaker.dto;
+package ru.fitnes.fitnestreaker.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,28 +11,26 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
-@Builder
+import java.util.Set;
+
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Sessions")
-public class SessionDto {
+@Schema(name = "Coaching Time", description = "Operation with CoachingTime")
+public class CoachingTimeRequestDto {
 
-    @JsonProperty("id")
-    private Long id;
-
-    @JsonProperty("trainingDateAndTime")
+    @JsonProperty("startOfTraining")
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime trainingDateAndTime;
+    private LocalDateTime startOfTraining;
 
-    @JsonProperty("status")
-    private String status; // "scheduled", "completed", etc.
+    @JsonProperty("endOfTraining")
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime endOfTraining;
 
-    @JsonProperty("userId")
-    private Long userId;
-
-    @JsonProperty("trainerId")
-    private Long trainerId;
+    @JsonProperty("trainersIds")
+    private Set<Long> trainersIds;
 
 }

@@ -1,4 +1,4 @@
-package ru.fitnes.fitnestreaker.dto;
+package ru.fitnes.fitnestreaker.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,16 +7,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Users")
-public class UserDto {
-
-    @JsonProperty("id")
-    private Long id;
+public class UserRequestDto {
 
     @JsonProperty("firstName")
     private String firstName;
@@ -30,9 +26,4 @@ public class UserDto {
     @JsonProperty("password")
     private String password;
 
-//    @JsonProperty("memberships")
-//    private Set<Long> membershipsId;
-//
-//    @JsonProperty("sessionsId")
-//    private Set<Long> sessionsId;
 }

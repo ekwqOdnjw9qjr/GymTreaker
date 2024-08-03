@@ -1,4 +1,4 @@
-package ru.fitnes.fitnestreaker.dto;
+package ru.fitnes.fitnestreaker.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,10 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Trainer")
-public class TrainerDto {
-
-    @JsonProperty("id")
-    private Long id;
+public class TrainerRequestDto {
 
     @JsonProperty("name")
     private String name;

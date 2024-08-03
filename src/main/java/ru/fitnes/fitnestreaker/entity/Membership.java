@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -29,12 +28,17 @@ public class Membership {
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
-//    @Column(name = "active")
-//    private boolean active;
+    @Column(name = "membership_duration")
+    private Long membershipDuration;
 
-    @Column(name = "membership_status")
-    @Enumerated(EnumType.STRING)
-    private MembershipStatus membershipStatus;
+//    @Column(name = "membership_status")
+//    @Enumerated(EnumType.STRING)
+//    private MembershipStatus membershipStatus;
+//
+//    @Column(name = "membership_end_date")
+//    @Enumerated(EnumType.STRING)
+//    private MembershipEndDate membershipEndDate;
+
 
     @Column(name = "freezing_days")
     private Long freezingDays;

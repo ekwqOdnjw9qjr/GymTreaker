@@ -1,20 +1,19 @@
 package ru.fitnes.fitnestreaker.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.fitnes.fitnestreaker.baseresponse.BaseResponseService;
 import ru.fitnes.fitnestreaker.baseresponse.ResponseWrapper;
-import ru.fitnes.fitnestreaker.dto.MembershipDto;
-import ru.fitnes.fitnestreaker.mapper.MembershipMapper;
-import ru.fitnes.fitnestreaker.service.MembershipService;
+import ru.fitnes.fitnestreaker.dto.request.MembershipRequestDto;
+import ru.fitnes.fitnestreaker.dto.response.MembershipResponseDto;
+import ru.fitnes.fitnestreaker.entity.MembershipStatus;
+import ru.fitnes.fitnestreaker.service.impl.MembershipServiceImpl;
 
 import java.util.List;
 
@@ -25,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MembershipController {
 
-    private final MembershipService membershipService;
+    private final MembershipServiceImpl membershipServiceImpl;
     private final BaseResponseService baseResponseService;
 
 
@@ -34,13 +33,13 @@ public class MembershipController {
             description = "Allows you to upload a company by ID from the database"
     )
     @GetMapping("/membership/{id}")
-    public ResponseWrapper<MembershipDto> getMembershipById(@PathVariable @Min(0) Long id) {
-        return baseResponseService.wrapSuccessResponse(membershipService.getById(id));
+    public ResponseWrapper<MembershipResponseDto> getMembershipById(@PathVariable @Min(0) Long id) {
+        return baseResponseService.wrapSuccessResponse(membershipServiceImpl.getById(id));
     }
 
     @GetMapping("/freeze/{id}")
-    public ResponseWrapper<MembershipDto> freeze(@PathVariable  Long id, Long freezeDays) {
-        return baseResponseService.wrapSuccessResponse(membershipService.freezeMembership(id,freezeDays));
+    public ResponseWrapper<MembershipResponseDto> freeze(@PathVariable  Long id, Long freezeDays) {
+        return baseResponseService.wrapSuccessResponse(membershipServiceImpl.freezeMembership(id,freezeDays));
     }
 
     @Operation(
@@ -48,8 +47,8 @@ public class MembershipController {
             description = "Allows you to unload all memberships from the database"
     )
     @GetMapping
-    public ResponseWrapper<List<MembershipDto>> getAllMembership() {
-        return baseResponseService.wrapSuccessResponse(membershipService.getAll());
+    public ResponseWrapper<List<MembershipResponseDto>> getAllMembership() {
+        return baseResponseService.wrapSuccessResponse(membershipServiceImpl.getAll());
     }
 
     @Operation(
@@ -58,13 +57,13 @@ public class MembershipController {
     )
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseWrapper<MembershipDto> createMembership(MembershipDto membershipDto) {
-        return baseResponseService.wrapSuccessResponse(membershipService.create(membershipDto));
+    public ResponseWrapper<MembershipRequestDto> createMembership(MembershipRequestDto membershipRequestDto) {
+        return baseResponseService.wrapSuccessResponse(membershipServiceImpl.create(membershipRequestDto));
     }
 
     @GetMapping("/check/{id}")
-    public ResponseWrapper<MembershipDto> checkStatus(@PathVariable @Min(0) Long id) {
-         return baseResponseService.wrapSuccessResponse(membershipService.checkStatus(id));
+    public ResponseWrapper<MembershipStatus> checkStatus(@PathVariable @Min(0) Long id) {
+         return baseResponseService.wrapSuccessResponse(membershipServiceImpl.checkStatus(id));
     }
 
     @Operation(
@@ -72,8 +71,8 @@ public class MembershipController {
             description = "Allows you to update membership information in the database"
     )
     @PutMapping("/update/{id}")
-    public ResponseWrapper<MembershipDto> updateMembership(@RequestBody @Valid MembershipDto membershipDto,@PathVariable Long id) {
-        return baseResponseService.wrapSuccessResponse(membershipService.update(membershipDto,id));
+    public ResponseWrapper<MembershipRequestDto> updateMembership(@RequestBody @Valid MembershipRequestDto membershipRequestDto, @PathVariable Long id) {
+        return baseResponseService.wrapSuccessResponse(membershipServiceImpl.update(membershipRequestDto,id));
     }
 
     @Operation(
@@ -82,7 +81,7 @@ public class MembershipController {
     )
     @DeleteMapping("/delete/{id}")
     public void deleteMembership(@PathVariable @Min(0) Long id) {
-        membershipService.delete(id);
+        membershipServiceImpl.delete(id);
     }
 
 

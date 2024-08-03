@@ -1,17 +1,23 @@
 package ru.fitnes.fitnestreaker.entity;
 
+import lombok.Getter;
+
+
+@Getter
 public enum MembershipEndDate {
-    BASIC(30), MEDIUM(60);
+    SMALL(30L),
+    BASIC(60L),
+    MEDIUM(90L),
+    LARGE(120L),
+    QUARTERLY(180L),
+    ANNUAL(360L);
 
 
-    private final int duration;
+    private final Long duration;
 
-    MembershipEndDate(int duration) {
+    MembershipEndDate(Long duration) {
         this.duration = duration;
     }
 
-    public int getDuration() {
-        return duration;
-    }
 }
 

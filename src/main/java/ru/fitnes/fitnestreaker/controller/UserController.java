@@ -6,15 +6,13 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.fitnes.fitnestreaker.baseresponse.BaseResponseService;
 import ru.fitnes.fitnestreaker.baseresponse.ResponseWrapper;
-import ru.fitnes.fitnestreaker.dto.TrainerDto;
-import ru.fitnes.fitnestreaker.dto.UserDto;
-import ru.fitnes.fitnestreaker.service.TrainerService;
-import ru.fitnes.fitnestreaker.service.UserService;
+import ru.fitnes.fitnestreaker.dto.request.UserRequestDto;
+import ru.fitnes.fitnestreaker.dto.response.UserResponseDto;
+import ru.fitnes.fitnestreaker.service.impl.UserServiceImpl;
 
 import java.util.List;
 
@@ -25,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
     private final BaseResponseService baseResponseService;
 
     @Operation(
@@ -33,8 +31,8 @@ public class UserController {
             description = "Allows you to upload a user by ID from the database"
     )
     @GetMapping("/user/{id}")
-    public ResponseWrapper<UserDto> getUserById(@PathVariable @Min(0) Long id) {
-        return baseResponseService.wrapSuccessResponse(userService.getById(id));
+    public ResponseWrapper<UserResponseDto> getUserById(@PathVariable @Min(0) Long id) {
+        return baseResponseService.wrapSuccessResponse(userServiceImpl.getById(id));
     }
 
     @Operation(
@@ -42,8 +40,8 @@ public class UserController {
             description = "Allows you to download all users from the database according to the specified data"
     )
     @GetMapping("/search")
-    public ResponseWrapper<List<UserDto>> getAllByCriteria(UserDto userDto) {
-        return baseResponseService.wrapSuccessResponse(userService.searchUsersByAnyFields(userDto));
+    public ResponseWrapper<List<UserResponseDto>> getAllByCriteria(UserRequestDto userRequestDto) {
+        return baseResponseService.wrapSuccessResponse(userServiceImpl.searchUsersByAnyFields(userRequestDto));
     }
 
     @Operation(
@@ -51,8 +49,8 @@ public class UserController {
             description = "Allows you to unload all users from the database"
     )
     @GetMapping
-    public ResponseWrapper<List<UserDto>> getAllUsers() {
-        return baseResponseService.wrapSuccessResponse(userService.getAll());
+    public ResponseWrapper<List<UserResponseDto>> getAllUsers() {
+        return baseResponseService.wrapSuccessResponse(userServiceImpl.getAll());
     }
 
     @Operation(
@@ -61,8 +59,8 @@ public class UserController {
     )
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseWrapper<UserDto> createUser(UserDto userDto) {
-        return baseResponseService.wrapSuccessResponse(userService.create(userDto));
+    public ResponseWrapper<UserRequestDto> createUser(UserRequestDto userRequestDto) {
+        return baseResponseService.wrapSuccessResponse(userServiceImpl.create(userRequestDto));
     }
 
     @Operation(
@@ -70,8 +68,8 @@ public class UserController {
             description = "Allows you to update user information in the database"
     )
     @PutMapping("/update/{id}")
-    public ResponseWrapper<UserDto> updateUser(@RequestBody @Valid UserDto userDto, @PathVariable Long id) {
-        return baseResponseService.wrapSuccessResponse(userService.update(userDto,id));
+    public ResponseWrapper<UserRequestDto> updateUser(@RequestBody @Valid UserRequestDto userRequestDto, @PathVariable Long id) {
+        return baseResponseService.wrapSuccessResponse(userServiceImpl.update(userRequestDto,id));
     }
 
     @Operation(
@@ -80,6 +78,6 @@ public class UserController {
     )
     @DeleteMapping("/delete/{id}")
     public void deleteUser(@PathVariable @Min(0) Long id) {
-        userService.delete(id);
+        userServiceImpl.delete(id);
     }
 }
