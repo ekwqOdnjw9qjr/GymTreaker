@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.fitnes.fitnestreaker.dto.request.MembershipRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.MembershipResponseDto;
 import ru.fitnes.fitnestreaker.entity.Membership;
-import ru.fitnes.fitnestreaker.entity.MembershipEndDate;
+import ru.fitnes.fitnestreaker.entity.MembershipType;
 import ru.fitnes.fitnestreaker.entity.MembershipStatus;
 import ru.fitnes.fitnestreaker.exception.ErrorType;
 import ru.fitnes.fitnestreaker.exception.LocalException;
@@ -30,9 +30,10 @@ public class MembershipServiceImpl implements MembershipService {
     @Override
     public MembershipResponseDto getById(Long id) {
         Membership membership = membershipRepository.findById(id)
-                .orElseThrow(()-> new LocalException(ErrorType.NOT_FOUND,"Membership with id: " + id + " not found"));
+                .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND, "Membership with id: " + id + " not found"));
         return membershipMapper.membershipResponseToDto(membership);
     }
+
     @Override
     public List<MembershipResponseDto> getAll() {
         List<Membership> membershipList = membershipRepository.findAll();
@@ -42,7 +43,7 @@ public class MembershipServiceImpl implements MembershipService {
     @Override
     public MembershipRequestDto create(MembershipRequestDto membershipRequestDto) {
         Membership membership = membershipMapper.membershipRequestToEntity(membershipRequestDto);
-            membership.setUser(userRepository.getReferenceById(membershipRequestDto.getUserId()));
+        membership.setUser(userRepository.getReferenceById(membershipRequestDto.getUserId()));
         LocalDateTime endDate = calculateEndDate(membership);
         if (endDate == null) {
             throw new LocalException(ErrorType.CLIENT_ERROR, "Вы выбрали недопустимое количество дней. " +
@@ -53,8 +54,9 @@ public class MembershipServiceImpl implements MembershipService {
         return membershipMapper.membershipRequestToDto(savedMembership);
     }
 
-    @Override
-    public MembershipResponseDto freezeMembership(Long id, Long freezeDays) throws LocalException {
+
+
+    public MembershipResponseDto freezeMembership(Long id, Long freezeDays) {
         if (freezeDays < 0) {
             throw new LocalException(ErrorType.CLIENT_ERROR, "The number of freeze days cannot be negative");
         }
@@ -83,16 +85,16 @@ public class MembershipServiceImpl implements MembershipService {
         if (localDateTimeNow.isAfter(membershipEndDate)) {
             return MembershipStatus.INACTIVE;
         } else {
-            return  MembershipStatus.ACTIVE;
+            return MembershipStatus.ACTIVE;
         }
     }
 
     @Override
     public MembershipRequestDto update(MembershipRequestDto membershipRequestDto, Long id) {
         Membership oldMembership = membershipRepository.findById(id)
-                .orElseThrow(()-> new LocalException(ErrorType.NOT_FOUND,"Membership with id: " + id + " not found"));
+                .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND, "Membership with id: " + id + " not found"));
         Membership newMembership = membershipMapper.membershipRequestToEntity(membershipRequestDto);
-        membershipMapper.merge(oldMembership,newMembership);
+        membershipMapper.merge(oldMembership, newMembership);
         Membership savedMembership = membershipRepository.save(oldMembership);
         return membershipMapper.membershipRequestToDto(savedMembership);
     }
@@ -106,18 +108,21 @@ public class MembershipServiceImpl implements MembershipService {
 
     @Override
     public LocalDateTime calculateEndDate(Membership membership) {
-        MembershipEndDate membershipEndDate = null;
+        MembershipType membershipType = null;
         switch (membership.getMembershipDuration().intValue()) {
-            case 30  -> membershipEndDate = MembershipEndDate.SMALL;
-            case 60  -> membershipEndDate = MembershipEndDate.BASIC;
-            case 90  -> membershipEndDate = MembershipEndDate.MEDIUM;
-            case 120 -> membershipEndDate = MembershipEndDate.LARGE;
-            case 180 -> membershipEndDate = MembershipEndDate.QUARTERLY;
-            case 360 -> membershipEndDate = MembershipEndDate.ANNUAL;
+            case 30 -> membershipType = MembershipType.SMALL;
+            case 60 -> membershipType = MembershipType.BASIC;
+            case 90 -> membershipType = MembershipType.MEDIUM;
+            case 120 -> membershipType = MembershipType.LARGE;
+            case 180 -> membershipType = MembershipType.QUARTERLY;
+            case 360 -> membershipType = MembershipType.ANNUAL;
             default -> {
                 return null; // Неизвестная продолжительность
             }
         }
-        return membership.getStartDate().plusDays(membershipEndDate.getDuration());
+        membership.setFreezingDays(membershipType.getFreezeDays());
+        return membership.getStartDate().plusDays(membershipType.getDuration());
     }
+
 }
+

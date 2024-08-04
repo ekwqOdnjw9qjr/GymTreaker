@@ -29,8 +29,6 @@ public class MembershipRequestDto {
     @JsonProperty("membershipDuration")
     private Long membershipDuration;
 
-    @JsonProperty("freezingDays")
-    private Long freezingDays;
 
     @JsonProperty("userId")
     private Long userId;

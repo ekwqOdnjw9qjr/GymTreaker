@@ -37,7 +37,7 @@ public class Membership {
 //
 //    @Column(name = "membership_end_date")
 //    @Enumerated(EnumType.STRING)
-//    private MembershipEndDate membershipEndDate;
+//    private MembershipType membershipEndDate;
 
 
     @Column(name = "freezing_days")

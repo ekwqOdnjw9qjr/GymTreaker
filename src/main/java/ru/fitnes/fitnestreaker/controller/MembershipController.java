@@ -37,9 +37,11 @@ public class MembershipController {
         return baseResponseService.wrapSuccessResponse(membershipServiceImpl.getById(id));
     }
 
+
+
     @GetMapping("/freeze/{id}")
-    public ResponseWrapper<MembershipResponseDto> freeze(@PathVariable  Long id, Long freezeDays) {
-        return baseResponseService.wrapSuccessResponse(membershipServiceImpl.freezeMembership(id,freezeDays));
+    public ResponseWrapper<MembershipResponseDto> freezeNew(@PathVariable  Long id, Long freezeDays) {
+        return baseResponseService.wrapSuccessResponse(membershipServiceImpl.freezeMembership(id, freezeDays));
     }
 
     @Operation(

@@ -3,10 +3,7 @@ package ru.fitnes.fitnestreaker.service;
 import ru.fitnes.fitnestreaker.dto.request.MembershipRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.MembershipResponseDto;
 import ru.fitnes.fitnestreaker.entity.Membership;
-import ru.fitnes.fitnestreaker.entity.MembershipEndDate;
 import ru.fitnes.fitnestreaker.entity.MembershipStatus;
-import ru.fitnes.fitnestreaker.exception.ErrorType;
-import ru.fitnes.fitnestreaker.exception.LocalException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,7 +16,7 @@ public interface MembershipService {
 
      MembershipRequestDto create(MembershipRequestDto membershipRequestDto);
 
-     MembershipResponseDto freezeMembership(Long id, Long freezeDays);
+//     MembershipResponseDto freezeMembership(Long id, Long freezeDays);
 
      MembershipStatus checkStatus(Long id);
 
@@ -29,4 +26,5 @@ public interface MembershipService {
 
     LocalDateTime calculateEndDate(Membership membership);
 
+     MembershipResponseDto freezeMembership(Long id,Long freezeDays);
 }
