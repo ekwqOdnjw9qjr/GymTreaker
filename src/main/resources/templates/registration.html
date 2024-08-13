@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create your account</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h2 class="mt-4">Create your account</h2>
+    <form th:action="@{/registration}" th:object="${userRequestDto}" method="post">
+        <div class="form-group">
+            <label for="firstName">First name</label>
+            <input type="text" id="firstName" th:field="*{firstName}" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="lastName">Last name</label>
+            <input type="text" id="lastName" th:field="*{lastName}" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" th:field="*{email}" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" th:field="*{password}" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Sign up</button>
+        </div>
+        <!-- Уведомление об успешной регистрации -->
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">
+        </div>
+        <!-- Уведомление об ошибке -->
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}">
+        </div>
+    </form>
+    <!-- Ссылка для перенаправления на страницу входа -->
+    <div>
+        <p>Already have an account? <a th:href="@{/login}">Войти</a></p>
+    </div>
+</div>
+</body>
+</html>

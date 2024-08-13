@@ -2,6 +2,8 @@ server:
   port: 8086
 
 spring:
+  liquibase:
+    change-log: db/changelog/db.changelog-master.xml
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -10,11 +12,26 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
-    show-sql: true
-    defer-datasource-initialization: true
+      ddl-auto: none
+#    show-sql: true
+#    defer-datasource-initialization: true
   sql:
     init:
       mode: always
       encoding: UTF-8
 
+  thymeleaf:
+        prefix: classpath:/templates/
+        suffix: .html
+        mode: HTML
+        encoding: UTF-8
+        cache: false  # Включите кэширование в продакшн-режиме
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
