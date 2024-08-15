@@ -11,24 +11,17 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
-@Builder
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Memberships")
 public class MembershipRequestDto {
 
-    @JsonProperty("type")
-    private String type;
-
     @JsonProperty("startDate")
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime startDate;
-
-    @JsonProperty("membershipDuration")
-    private Long membershipDuration;
-
 
     @JsonProperty("userId")
     private Long userId;

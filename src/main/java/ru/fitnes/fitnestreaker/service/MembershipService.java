@@ -3,7 +3,8 @@ package ru.fitnes.fitnestreaker.service;
 import ru.fitnes.fitnestreaker.dto.request.MembershipRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.MembershipResponseDto;
 import ru.fitnes.fitnestreaker.entity.Membership;
-import ru.fitnes.fitnestreaker.entity.MembershipStatus;
+import ru.fitnes.fitnestreaker.entity.enums.MembershipStatus;
+import ru.fitnes.fitnestreaker.entity.enums.MembershipType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,13 +15,11 @@ public interface MembershipService {
 
      List<MembershipResponseDto> getAll();
 
-     MembershipRequestDto create(MembershipRequestDto membershipRequestDto);
+     MembershipRequestDto create(MembershipRequestDto membershipRequestDto, MembershipType membershipType);
 
 //     MembershipResponseDto freezeMembership(Long id, Long freezeDays);
 
      MembershipStatus checkStatus(Long id);
-
-     MembershipRequestDto update(MembershipRequestDto membershipRequestDto, Long id);
 
      void delete(Long id);
 

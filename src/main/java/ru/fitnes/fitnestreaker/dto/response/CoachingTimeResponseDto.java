@@ -32,6 +32,4 @@ public class CoachingTimeResponseDto {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime endOfTraining;
 
-    @JsonProperty("trainersIds")
-    private Set<Long> trainersIds;
 }

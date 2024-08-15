@@ -1,4 +1,4 @@
-package ru.fitnes.fitnestreaker.entity;
+package ru.fitnes.fitnestreaker.entity.enums;
 
 import lombok.Getter;
 

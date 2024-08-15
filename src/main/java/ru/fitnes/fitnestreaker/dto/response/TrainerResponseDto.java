@@ -8,8 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Set;
-@Builder
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Trainer")
@@ -18,15 +18,21 @@ public class TrainerResponseDto {
     @JsonProperty("id")
     private Long id;
 
-    @JsonProperty("name")
-    private String name;
+    @JsonProperty("firstName")
+    private String firstName;
+
+    @JsonProperty("lastName")
+    private String lastName;
 
     @JsonProperty("specialty")
     private String specialty;
 
-    @JsonProperty("coachingTimesIds")
-    private Set<Long> coachingTimesIds;
+    @JsonProperty("description")
+    private String description;;
 
 //    @JsonProperty("sessionsId")
 //    private Set<Long> sessionsId;
+
+    @JsonProperty("userId")
+    private Long userId;
 }

@@ -1,13 +1,8 @@
 package ru.fitnes.fitnestreaker.service;
 
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.transaction.annotation.Transactional;
 import ru.fitnes.fitnestreaker.dto.request.UserRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.UserResponseDto;
-import ru.fitnes.fitnestreaker.entity.User;
-import ru.fitnes.fitnestreaker.exception.ErrorType;
-import ru.fitnes.fitnestreaker.exception.LocalException;
-import ru.fitnes.fitnestreaker.repository.UserSpecification;
+import ru.fitnes.fitnestreaker.entity.enums.Role;
 
 import java.util.List;
 
@@ -15,14 +10,19 @@ public interface UserService {
 
      UserResponseDto getById(Long id);
 
+     UserResponseDto getUserInfoByEmail(String email);
+
      List<UserResponseDto> searchUsersByAnyFields(UserRequestDto userRequestDto);
 
      List<UserResponseDto> getAll();
 
-     UserRequestDto create(UserRequestDto userRequestDto);
+     UserRequestDto registerNewUser(UserRequestDto userRequestDto) throws Exception;
 
      UserRequestDto update(UserRequestDto dto, Long id);
 
+     UserResponseDto changeRole(Long id, Role role);
+
      void delete(Long id);
+
 
 }

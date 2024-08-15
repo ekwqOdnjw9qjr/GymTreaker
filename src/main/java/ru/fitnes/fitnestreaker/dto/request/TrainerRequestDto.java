@@ -6,24 +6,34 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.fitnes.fitnestreaker.entity.User;
 
 import java.util.Set;
 
-@Builder
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Trainer")
 public class TrainerRequestDto {
 
-    @JsonProperty("name")
-    private String name;
+    @JsonProperty("first_name")
+    private String firstName;
+
+    @JsonProperty("last_name")
+    private String lastName;
 
     @JsonProperty("specialty")
     private String specialty;
 
-    @JsonProperty("coachingTimesIds")
-    private Set<Long> coachingTimesIds;
+    @JsonProperty("description")
+    private String description;
+
+    @JsonProperty("userId")
+    private Long userId;
+
+//    @JsonProperty("coachingTimesIds")
+//    private Set<Long> coachingTimesIds;
 
 //    @JsonProperty("sessionsId")
 //    private Set<Long> sessionsId;

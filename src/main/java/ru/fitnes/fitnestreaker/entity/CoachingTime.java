@@ -27,6 +27,13 @@ public class CoachingTime {
     @Column(name = "end_of_training")
     private LocalDateTime endOfTraining;
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY, mappedBy = "coachingTimes")
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @JoinTable(name = "coaching_times_trainers",
+            joinColumns = @JoinColumn(name = "coaching_time_id"),
+            inverseJoinColumns = @JoinColumn(name = "trainer_id"))
     private Set<Trainer> trainers = new HashSet<>();
+
+    @OneToMany(mappedBy = "coachingTime", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH, orphanRemoval = true)
+    private Set<Session> sessions = new HashSet<>();
+
 }

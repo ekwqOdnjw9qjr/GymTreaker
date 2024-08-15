@@ -19,10 +19,10 @@ public interface MembershipMapper {
 
     @Mapping(source = "user.id", target = "userId")
     MembershipResponseDto membershipResponseToDto(Membership membership);
-
+    @Mapping(source = "user.id", target = "userId")
     List<MembershipResponseDto> membershipResponseToListDto(List<Membership> membershipList);
 
-    void merge(@MappingTarget Membership target, Membership source);
+
 
 
 //    List<Membership> toListEntity(List<MembershipRequestDto> membershipRequestDtoList);

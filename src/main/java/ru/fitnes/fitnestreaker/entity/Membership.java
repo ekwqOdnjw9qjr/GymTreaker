@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import ru.fitnes.fitnestreaker.entity.enums.MembershipType;
 
 import java.time.LocalDateTime;
 
@@ -19,26 +20,15 @@ public class Membership {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "type")
-    private String type;
-
     @Column(name = "start_date")
     private LocalDateTime startDate;
 
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
-    @Column(name = "membership_duration")
-    private Long membershipDuration;
-
-//    @Column(name = "membership_status")
-//    @Enumerated(EnumType.STRING)
-//    private MembershipStatus membershipStatus;
-//
-//    @Column(name = "membership_end_date")
-//    @Enumerated(EnumType.STRING)
-//    private MembershipType membershipEndDate;
-
+    @Enumerated(EnumType.STRING)
+    @Column(name = "membership_type")
+    private MembershipType membershipType;
 
     @Column(name = "freezing_days")
     private Long freezingDays;

@@ -11,16 +11,18 @@ import org.springframework.web.bind.annotation.*;
 import ru.fitnes.fitnestreaker.baseresponse.BaseResponseService;
 import ru.fitnes.fitnestreaker.baseresponse.ResponseWrapper;
 import ru.fitnes.fitnestreaker.dto.request.TrainerRequestDto;
+import ru.fitnes.fitnestreaker.dto.response.CoachingTimeResponseDto;
 import ru.fitnes.fitnestreaker.dto.response.TrainerResponseDto;
 import ru.fitnes.fitnestreaker.service.impl.TrainerServiceImpl;
 
 import java.util.List;
 
-@Tag(name = "Trainers",description = "Operation on trainers")
+
 @Validated
 @RestController
 @RequestMapping("/trainers")
 @RequiredArgsConstructor
+@Tag(name = "Trainers",description = "Operation on trainers")
 public class TrainerController {
 
     private final TrainerServiceImpl trainerServiceImpl;
@@ -33,6 +35,15 @@ public class TrainerController {
     @GetMapping("/trainer/{id}")
     public ResponseWrapper<TrainerResponseDto> getTrainerById(@PathVariable @Min(0) Long id) {
         return baseResponseService.wrapSuccessResponse(trainerServiceImpl.getById(id));
+    }
+
+    @Operation(
+            summary = "Getting a trainer schedule by trainer ID",
+            description = "Allows you to check a trainer schedule by trainer ID from the database"
+    )
+    @GetMapping("/schedule/trainer/{id}")
+    public ResponseWrapper<List<CoachingTimeResponseDto>> getScheduleTrainerByTrainerId(@PathVariable @Min(0) Long id){
+        return baseResponseService.wrapSuccessResponse(trainerServiceImpl.findCoachingTimeByTrainerId(id));
     }
 
     @Operation(
@@ -59,8 +70,8 @@ public class TrainerController {
             description = "Allows you to update trainer information in the database"
     )
     @PutMapping("/update/{id}")
-    public ResponseWrapper<TrainerRequestDto> updateTrainer(@RequestBody @Valid TrainerRequestDto trainerRequestDto, @PathVariable Long id) {
-        return baseResponseService.wrapSuccessResponse(trainerServiceImpl.update(trainerRequestDto,id));
+    public ResponseWrapper<TrainerRequestDto> updateTrainer(@PathVariable Long id, @RequestBody TrainerRequestDto trainerRequestDto) {
+        return baseResponseService.wrapSuccessResponse(trainerServiceImpl.update(id,trainerRequestDto));
     }
 
     @Operation(

@@ -8,12 +8,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.fitnes.fitnestreaker.entity.enums.MembershipType;
 
 
 import java.time.LocalDateTime;
 
-@Builder
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Memberships")
@@ -21,9 +22,6 @@ public class MembershipResponseDto {
 
     @JsonProperty("id")
     private Long id;
-
-    @JsonProperty("type")
-    private String type;
 
     @JsonProperty("startDate")
     @Temporal(TemporalType.DATE)
@@ -35,8 +33,8 @@ public class MembershipResponseDto {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime endDate;
 
-    @JsonProperty("membershipDuration")
-    private Long membershipDuration;
+    @JsonProperty("membershipType")
+    private MembershipType membershipType;
 
     @JsonProperty("freezingDays")
     private Long freezingDays;

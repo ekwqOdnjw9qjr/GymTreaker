@@ -11,11 +11,11 @@ import ru.fitnes.fitnestreaker.baseresponse.ResponseWrapper;
 import ru.fitnes.fitnestreaker.dto.request.CoachingTimeRequestDto;
 import ru.fitnes.fitnestreaker.service.impl.CoachingTimeServiceImpl;
 
-@RestController
-@RequestMapping("/trainings")
-@RequiredArgsConstructor
-@Tag(name = "Coaching Time", description = "Operation with CoachingTime")
 @Validated
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/coaching_times")
+@Tag(name = "Coaching Time", description = "Operation with CoachingTime")
 public class CoachingTimeController {
 
     public final BaseResponseService baseResponseService;
