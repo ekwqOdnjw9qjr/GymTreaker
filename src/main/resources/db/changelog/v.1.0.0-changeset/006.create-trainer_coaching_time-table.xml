@@ -5,22 +5,22 @@
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="006.create-trainer_coaching_time-table" author="Roman">
-        <createTable tableName="trainers_coaching_times">
-            <column name="trainer_id" type="bigint">
+        <createTable tableName="coaching_times_trainers">
+            <column name="coaching_time_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
-            <column name="coaching_time_id" type="bigint">
+            <column name="trainer_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
         </createTable>
 
         <addForeignKeyConstraint
-                baseTableName="trainers_coaching_times" baseColumnNames="trainer_id"
-                referencedTableName="trainers" referencedColumnNames="id"
-                constraintName="fk_trainer_coaching_time_trainer"/>
-        <addForeignKeyConstraint
-                baseTableName="trainers_coaching_times" baseColumnNames="coaching_time_id"
+                baseTableName="coaching_times_trainers" baseColumnNames="coaching_time_id"
                 referencedTableName="coaching_times" referencedColumnNames="id"
                 constraintName="fk_trainer_coaching_time_coaching_time"/>
+        <addForeignKeyConstraint
+                baseTableName="coaching_times_trainers" baseColumnNames="trainer_id"
+                referencedTableName="trainers" referencedColumnNames="id"
+                constraintName="fk_trainer_coaching_time_trainer"/>
     </changeSet>
 </databaseChangeLog>
