@@ -1,14 +1,15 @@
 package ru.fitnes.fitnestreaker.service.impl;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import ru.fitnes.fitnestreaker.config.SecurityConfig;
+import ru.fitnes.fitnestreaker.config.CustomUserDetails;
 import ru.fitnes.fitnestreaker.dto.request.UserRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.UserResponseDto;
 import ru.fitnes.fitnestreaker.entity.enums.Role;
@@ -20,8 +21,8 @@ import ru.fitnes.fitnestreaker.repository.UserSpecification;
 import ru.fitnes.fitnestreaker.repository.UserRepository;
 import ru.fitnes.fitnestreaker.service.UserService;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +31,6 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final SecurityConfig securityConfig;
 
 
 
@@ -42,11 +42,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto getUserInfoByEmail(String email) {
-        User user = userRepository.findByEmail(email);
-        if (!user.getId().equals(securityConfig.getCurrentUser().getId())) {
-            throw new RuntimeException("You do not have permission to check this user's data.");
-        }
+    public UserResponseDto getUserInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        User user = userRepository.findUserById(customUserDetails.getId());
         return userMapper.userResponseToDto(user);
     }
 
@@ -65,16 +64,19 @@ public class UserServiceImpl implements UserService {
         return userMapper.userResponseToListDto(userList);
     }
 
-    public UserRequestDto registerNewUser(UserRequestDto userRequestDto) throws Exception {
-        System.out.println("Registering user: " + userRequestDto);
+    @Override
+    public UserRequestDto registerNewUser(UserRequestDto userRequestDto){
+        if (userRepository.checkEmailExists(userRequestDto.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("User with this email is already register");
+        }
         User user = userMapper.userRequestToEntity(userRequestDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(Role.ROLE_USER);
         User savedUser = userRepository.save(user);
-        System.out.println("User saved: " + savedUser);
         return userMapper.userRequestToDto(savedUser);
     }
 
+    @Override
     public UserResponseDto changeRole(Long id, Role role) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,"User with id: " + id + " not found."));
@@ -83,13 +85,13 @@ public class UserServiceImpl implements UserService {
         return userMapper.userResponseToDto(savedUser);
     }
 
+
+
+    @Override
+    @PreAuthorize("#id == authentication.principal.id")
     public UserRequestDto update(UserRequestDto userRequestDto, Long id) {
         User userToUpdate = userRepository.findById(id)
                 .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND, "User with id: " + id + " not found."));
-        if (!userToUpdate.getId().equals(securityConfig.getCurrentUser().getId())) {
-            throw new RuntimeException("You do not have permission to update this user's data.");
-        }
-
         userMapper.merge(userToUpdate, userMapper.userRequestToEntity(userRequestDto));
         userToUpdate.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
         User savedUser = userRepository.save(userToUpdate);
@@ -97,9 +99,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(Long id) {
+    @PreAuthorize("#id == authentication.principal.id")
+    public void delete(Long id, HttpSession session) {
         userRepository.deleteById(id);
+        logout(session);
+
     }
 
+    public void logout(HttpSession session) {
+        if (session != null) {
+            session.invalidate();
+        }
+
+    }
 
 }

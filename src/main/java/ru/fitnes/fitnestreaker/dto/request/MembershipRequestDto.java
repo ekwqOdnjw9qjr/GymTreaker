@@ -20,9 +20,7 @@ public class MembershipRequestDto {
 
     @JsonProperty("startDate")
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @DateTimeFormat(pattern = "yyyy-MM-ddTHH:mm")
     private LocalDateTime startDate;
 
-    @JsonProperty("userId")
-    private Long userId;
 }

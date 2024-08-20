@@ -5,13 +5,17 @@ import ru.fitnes.fitnestreaker.dto.request.CoachingTimeRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.CoachingTimeResponseDto;
 
 
-import java.time.LocalDateTime;
-import java.util.List;
+
+import java.time.DayOfWeek;
+
 
 
 public interface CoachingTimeService {
 
-     CoachingTimeRequestDto create(CoachingTimeRequestDto coachingTimeRequestDto);
+     CoachingTimeResponseDto findById(Long id);
+     CoachingTimeRequestDto create(CoachingTimeRequestDto coachingTimeRequestDto, DayOfWeek dayOfWeek);
+
+     void delete(Long id);
 
 
 

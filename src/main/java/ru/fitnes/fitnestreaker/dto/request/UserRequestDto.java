@@ -22,6 +22,7 @@ public class UserRequestDto {
     @Pattern(regexp = "^[a-zA-Zа-яА-Я\\s]+$",
             message = "The first name can contain only lowercase and uppercase letters " +
                       "of the Russian and English alphabets ")
+    @Schema(example = "Lena")
     private String firstName;
 
     @JsonProperty("lastName")
@@ -29,14 +30,15 @@ public class UserRequestDto {
     @Pattern(regexp = "^[a-zA-Zа-яА-Я\\s]+$",
             message = "The last name can contain only lowercase and uppercase letters " +
                     "of the Russian and English alphabets ")
+    @Schema(example = "Golovach")
     private String lastName;
 
     @JsonProperty("email")
-    @Email
+    @Email(message = "zxc")
+    @Schema(example = "LenaGolovach@gmail.com")
     private String email;
 
     @JsonProperty("password")
     @Size(min = 5, max = 55555, message = "The password must contain from 5 to 5555 characters")
     private String password;
-
 }

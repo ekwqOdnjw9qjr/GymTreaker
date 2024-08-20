@@ -1,18 +1,18 @@
 package ru.fitnes.fitnestreaker.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.FutureOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
-import java.util.Set;
+import java.time.LocalTime;
+import java.util.List;
+
 
 @Data
 @Builder
@@ -21,17 +21,18 @@ import java.util.Set;
 @Schema(name = "Coaching Time", description = "Operation with CoachingTime")
 public class CoachingTimeRequestDto {
 
-    @JsonProperty("startOfTraining")
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime startOfTraining;
 
+    @Schema(example = "07:10")
+    @JsonProperty("startOfTraining")
+    @DateTimeFormat(pattern = "HH:mm")
+    private LocalTime startOfTraining;
+
+    @Schema(example = "09:10")
     @JsonProperty("endOfTraining")
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime endOfTraining;
+    @DateTimeFormat(pattern = "HH:mm")
+    private LocalTime endOfTraining;
 
     @JsonProperty("trainersIds")
-    private Set<Long> trainersIds;
+    private List<Long> trainersIds;
 
 }

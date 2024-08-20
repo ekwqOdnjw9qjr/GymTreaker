@@ -2,21 +2,21 @@ package ru.fitnes.fitnestreaker.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import ru.fitnes.fitnestreaker.config.CustomUserDetails;
 import ru.fitnes.fitnestreaker.config.SecurityConfig;
 import ru.fitnes.fitnestreaker.dto.request.MembershipRequestDto;
-import ru.fitnes.fitnestreaker.dto.response.CoachingTimeResponseDto;
 import ru.fitnes.fitnestreaker.dto.response.MembershipResponseDto;
-import ru.fitnes.fitnestreaker.entity.CoachingTime;
 import ru.fitnes.fitnestreaker.entity.Membership;
-import ru.fitnes.fitnestreaker.entity.Trainer;
 import ru.fitnes.fitnestreaker.entity.User;
 import ru.fitnes.fitnestreaker.entity.enums.MembershipType;
 import ru.fitnes.fitnestreaker.entity.enums.MembershipStatus;
 import ru.fitnes.fitnestreaker.exception.ErrorType;
 import ru.fitnes.fitnestreaker.exception.LocalException;
 import ru.fitnes.fitnestreaker.mapper.MembershipMapper;
-import ru.fitnes.fitnestreaker.mapper.UserMapper;
 import ru.fitnes.fitnestreaker.repository.MembershipRepository;
 import ru.fitnes.fitnestreaker.repository.UserRepository;
 import ru.fitnes.fitnestreaker.service.MembershipService;
@@ -24,6 +24,7 @@ import ru.fitnes.fitnestreaker.service.MembershipService;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -32,7 +33,6 @@ public class MembershipServiceImpl implements MembershipService {
     private final MembershipMapper membershipMapper;
     private final MembershipRepository membershipRepository;
     private final UserRepository userRepository;
-    private final SecurityConfig securityConfig;
 
 
     @Override
@@ -41,15 +41,13 @@ public class MembershipServiceImpl implements MembershipService {
                 .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND, "Membership with id: " + id + " not found"));
         return membershipMapper.membershipResponseToDto(membership);
     }
-
-    public List<MembershipResponseDto> findMembershipByUserId(Long id) {
+    @Override
+    @PreAuthorize("#id == authentication.principal.id")
+    public Set<MembershipResponseDto> findMembershipByUserId(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(()-> new LocalException(ErrorType.NOT_FOUND,"Trainer with id: " + id + " not found."));
-        if (!user.getId().equals(securityConfig.getCurrentUser().getId())) {
-            throw new RuntimeException("You do not have permission to check this user's data.");
-        }
-        List<Membership> membershipList = user.getMemberships();
-        return membershipMapper.membershipResponseToListDto(membershipList);
+        Set<Membership> membershipSet= user.getMemberships();
+        return membershipMapper.membershipResponseToSetDto(membershipSet);
 
     }
 
@@ -61,21 +59,19 @@ public class MembershipServiceImpl implements MembershipService {
 
     @Override
     public MembershipRequestDto create(MembershipRequestDto membershipRequestDto,MembershipType membershipType) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         Membership membership = membershipMapper.membershipRequestToEntity(membershipRequestDto);
-        membership.setUser(userRepository.getReferenceById(membershipRequestDto.getUserId()));
+        membership.setUser(userRepository.getReferenceById(customUserDetails.getId()));
         membership.setMembershipType(membershipType);
         LocalDateTime endDate = calculateEndDate(membership);
-        if (endDate == null) {
-            throw new LocalException(ErrorType.CLIENT_ERROR, "Вы выбрали недопустимое количество дней. " +
-                    "Пожалуйста, выберите правильное количество дней.");
-        }
         membership.setEndDate(endDate);
         Membership savedMembership = membershipRepository.save(membership);
         return membershipMapper.membershipRequestToDto(savedMembership);
     }
 
-
-
+    @Override
+    @PreAuthorize("#id == authentication.principal.id")
     public MembershipResponseDto freezeMembership(Long id, Long freezeDays) {
         if (freezeDays < 0) {
             throw new LocalException(ErrorType.CLIENT_ERROR, "The number of freeze days cannot be negative");

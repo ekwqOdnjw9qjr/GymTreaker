@@ -8,7 +8,8 @@
         <addColumn schemaName="public"
                    tableName="trainers">
             <column name="user_id" type="bigint">
-                <constraints foreignKeyName="trainer_user_fk"
+                <constraints unique="true"
+                             foreignKeyName="trainer_user_fk"
                              referencedTableName="users"
                              referencedColumnNames="id"
                              deleteCascade="true"/>

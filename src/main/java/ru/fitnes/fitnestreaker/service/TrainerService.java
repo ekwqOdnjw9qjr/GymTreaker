@@ -5,6 +5,7 @@ import ru.fitnes.fitnestreaker.dto.response.CoachingTimeResponseDto;
 import ru.fitnes.fitnestreaker.dto.response.TrainerResponseDto;
 
 import java.util.List;
+import java.util.Set;
 
 public interface TrainerService {
      TrainerResponseDto getById(Long id);

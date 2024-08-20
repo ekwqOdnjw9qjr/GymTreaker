@@ -1,6 +1,7 @@
 package ru.fitnes.fitnestreaker.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import ru.fitnes.fitnestreaker.dto.request.UserRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.UserResponseDto;
@@ -19,13 +20,9 @@ public interface UserMapper {
 
     List<UserResponseDto> userResponseToListDto(List<User> userList);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "role", ignore = true)
     void merge(@MappingTarget User target, User source);
-
-
-//    List<User> toListEntity(List<UserRequestDto> userRequestDtoList);
-//    User userResponseToEntity(UserResponseDto userResponseDto);
-//    List<UserRequestDto> userRequestToListDto(List<User> userList);
-
 
 
 }

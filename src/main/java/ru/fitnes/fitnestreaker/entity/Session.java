@@ -4,14 +4,13 @@ import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+
 
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode
 @Table(name = "sessions")
 public class Session {
 
@@ -20,13 +19,8 @@ public class Session {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "training_date_and_time")
-    @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
-    private LocalDateTime trainingDateAndTime;
-
-    @Column(name = "status")
-    private String status; // "scheduled", "completed", etc.
+    @Column(name = "date_of_training")
+    private LocalDate dateOfTraining;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -35,5 +29,15 @@ public class Session {
     @ManyToOne
     @JoinColumn(name = "trainer_id")
     private Trainer trainer;
+
+    @ManyToOne
+    @JoinColumn(name = "coaching_time_id")
+    private CoachingTime coachingTime;
+
+    @Column(name = "comment")
+    private String comment;
+
+
+
 
 }

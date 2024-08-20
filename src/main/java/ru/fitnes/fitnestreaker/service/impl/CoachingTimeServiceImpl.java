@@ -2,19 +2,22 @@ package ru.fitnes.fitnestreaker.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import ru.fitnes.fitnestreaker.config.CustomUserDetails;
 import ru.fitnes.fitnestreaker.dto.request.CoachingTimeRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.CoachingTimeResponseDto;
 import ru.fitnes.fitnestreaker.entity.CoachingTime;
 import ru.fitnes.fitnestreaker.entity.Trainer;
+import ru.fitnes.fitnestreaker.exception.ErrorType;
+import ru.fitnes.fitnestreaker.exception.LocalException;
 import ru.fitnes.fitnestreaker.mapper.CoachingTimeMapper;
 import ru.fitnes.fitnestreaker.repository.CoachingTimeRepository;
 import ru.fitnes.fitnestreaker.repository.TrainerRepository;
 import ru.fitnes.fitnestreaker.service.CoachingTimeService;
 
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
+import java.time.DayOfWeek;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,21 +31,37 @@ public class CoachingTimeServiceImpl implements CoachingTimeService {
 
 
     @Override
-    public CoachingTimeRequestDto create(CoachingTimeRequestDto coachingTimeRequestDto) {
+    public CoachingTimeResponseDto findById(Long id) {
+        CoachingTime coachingTime = coachingTimeRepository.findById(id)
+                .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,
+                        "Coaching time with id: " + id + " not found."));
+        return coachingTimeMapper.coachingTimeResponseToDto(coachingTime);
+    }
+
+    @Override
+//    @PreAuthorize("#trainer.user.id == authentication.principal.id")
+    public CoachingTimeRequestDto create(CoachingTimeRequestDto coachingTimeRequestDto, DayOfWeek dayOfWeek) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
         CoachingTime coachingTime = coachingTimeMapper.coachingTimeRequestToEntity(coachingTimeRequestDto);
-        Set<Trainer> trainers = new HashSet<>();
-        for (Long trainersIds : coachingTimeRequestDto.getTrainersIds()) {
-            Trainer trainer = trainerRepository.getReferenceById(trainersIds);
-            trainers.add(trainer);
-        }
-        coachingTime.setTrainers(trainers);
+//        Set<Trainer> trainersSet = new HashSet<>();
+//        for (Long trainersIds : coachingTimeRequestDto.getTrainersIds()) {
+//            Trainer trainer = trainerRepository.getReferenceById(trainersIds);
+//            trainersSet.add(trainer);
+//        }
+        Set<Trainer> trainer = trainerRepository.findTrainerByUserId(customUserDetails.getId());
+
+        coachingTime.setDayOfWeek(dayOfWeek);
+        coachingTime.setTrainers(trainer);
         CoachingTime savedCoachingTime = coachingTimeRepository.save(coachingTime);
         return coachingTimeMapper.coachingTimeRequestToDto(savedCoachingTime);
     }
 
-
-
-
+    @Override
+    public void delete(Long id) {
+        coachingTimeRepository.deleteById(id);
+    }
 
 
     private Set<Trainer> getTrainersFromIds(Set<Long> trainerIds) {

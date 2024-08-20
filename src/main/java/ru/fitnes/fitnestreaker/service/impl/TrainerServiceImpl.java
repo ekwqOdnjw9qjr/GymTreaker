@@ -2,7 +2,11 @@ package ru.fitnes.fitnestreaker.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import ru.fitnes.fitnestreaker.config.CustomUserDetails;
 import ru.fitnes.fitnestreaker.dto.request.TrainerRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.CoachingTimeResponseDto;
 import ru.fitnes.fitnestreaker.dto.response.TrainerResponseDto;
@@ -43,31 +47,31 @@ public class TrainerServiceImpl implements TrainerService {
         return trainerMapper.trainerResponseToListDto(trainerList);
 
     }
-
-    public List<CoachingTimeResponseDto> findCoachingTimeByTrainerId(Long id) {
+    @Override
+        public List<CoachingTimeResponseDto> findCoachingTimeByTrainerId(Long id) {
         Trainer trainer = trainerRepository.findById(id)
                 .orElseThrow(()-> new LocalException(ErrorType.NOT_FOUND,"Trainer with id: " + id + " not found."));
-        List<CoachingTime> coachingTimeSet = trainer.getCoachingTimes();
-        return coachingTimeMapper.coachingTimeResponseToListDto(coachingTimeSet);
+        List<CoachingTime> coachingTimeList = trainer.getCoachingTimes();
+        return coachingTimeMapper.coachingTimeResponseToListDto(coachingTimeList);
 
     }
 
 
     @Override
     public TrainerRequestDto create(TrainerRequestDto trainerRequestDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
         Trainer trainer = trainerMapper.trainerRequestToEntity(trainerRequestDto);
-//        Set<CoachingTime> coachingTimes = new HashSet<>();
-//        for (Long coachingTimeId : trainerRequestDto.getCoachingTimesIds()) {
-//            CoachingTime coachingTime = coachingTimeRepository.getReferenceById(coachingTimeId);
-//            coachingTimes.add(coachingTime);
-//        }
-//        trainer.setCoachingTimes(coachingTimes);
-        trainer.setUser(userRepository.getReferenceById(trainerRequestDto.getUserId()));
+        trainer.setUser(userRepository.getReferenceById(customUserDetails.getId()));
         Trainer savedTrainer = trainerRepository.save(trainer);
         return trainerMapper.trainerRequestToDto(savedTrainer);
     }
+    // сделать метод чтобы тренер мог посмотреть кто на какой день к нему записан
+
 
     @Override
+    @PreAuthorize("#id == authentication.principal.id")
     public TrainerRequestDto update(Long id, TrainerRequestDto trainerRequestDto) {
         Trainer oldTrainer = trainerRepository.findById(id)
                 .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND, "Trainer with id: " + id + " not found."));
@@ -75,6 +79,8 @@ public class TrainerServiceImpl implements TrainerService {
         Trainer savedTrainer = trainerRepository.save(oldTrainer);
         return trainerMapper.trainerRequestToDto(savedTrainer);
     }
+
+    @PreAuthorize("#id == authentication.principal.id")
     @Override
     public void delete(Long id) {
         trainerRepository.deleteById(id);

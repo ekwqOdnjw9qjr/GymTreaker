@@ -4,11 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,9 +29,9 @@ import ru.fitnes.fitnestreaker.repository.UserRepository;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
 
-    private final UserRepository userRepository;
     private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
@@ -44,9 +48,8 @@ public class SecurityConfig {
                         .requestMatchers("/coaching_times/create").hasAnyRole("ADMIN", "TRAINER")
                         .requestMatchers("users/user/{id}").hasRole("ADMIN")
                         .requestMatchers("users/search").hasRole("ADMIN")
-                        .requestMatchers("users").hasRole("ADMIN")
+                        .requestMatchers("users/all").hasRole("ADMIN")
                         .requestMatchers("trainers/update/").hasAnyRole("ADMIN", "TRAINER")
-                        .requestMatchers("trainers").hasAnyRole("ADMIN", "TRAINER")
                         .requestMatchers("trainers/delete/").hasAnyRole("ADMIN", "TRAINER")
                         .requestMatchers("memberships").hasRole("ADMIN")
                         .requestMatchers("memberships/membership/").hasRole("ADMIN")
@@ -70,13 +73,5 @@ public class SecurityConfig {
         auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
     }
 
-
-    public User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getPrincipal() instanceof UserDetails userDetails) {
-            return userRepository.findByEmail(userDetails.getUsername());
-        }
-        throw new RuntimeException("No user is currently authenticated");
-    }
 
 }

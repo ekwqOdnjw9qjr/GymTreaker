@@ -1,36 +1,34 @@
-package ru.fitnes.fitnestreaker.dto.request;
+package ru.fitnes.fitnestreaker.dto.response.session;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Sessions")
-public class SessionRequestDto {
+public class SessionResponseDto {
+
+    @JsonProperty("id")
+    private Long id;
 
     @JsonProperty("comment")
     private String comment;
 
-    @NotNull
-    @JsonProperty("dateOfTraining")
+    @JsonProperty("Date of training")
     private LocalDate dateOfTraining;
 
-    @NotNull
-    @JsonProperty("trainerId")
-    private Long trainerId;
+    @JsonProperty("Trainer info")
+    private TrainerResponse trainer;
 
-    @NotNull
-    @JsonProperty("coachingTimeId")
-    private Long coachingTimeId;
+    @JsonProperty("Coaching time info")
+    private CoachingTimeResponse coachingTime;
 
 }

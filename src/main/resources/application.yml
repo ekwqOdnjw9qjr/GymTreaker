@@ -2,6 +2,9 @@ server:
   port: 8086
 
 spring:
+  jackson:
+    date-format: "yyyy-MM-dd'T'HH:mm:ss" # Общие настройки формата даты и времени
+    time-zone: "UTC"
   liquibase:
     change-log: db/changelog/db.changelog-master.xml
   datasource:
@@ -25,7 +28,7 @@ spring:
         suffix: .html
         mode: HTML
         encoding: UTF-8
-        cache: false  # Включите кэширование в продакшн-режиме
+        cache: false
 logging:
   level:
     org:
@@ -35,3 +38,4 @@ logging:
           descriptor:
             sql:
               BasicBinder: TRACE
+

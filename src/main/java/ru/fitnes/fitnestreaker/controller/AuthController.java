@@ -9,7 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.fitnes.fitnestreaker.dto.request.UserRequestDto;
 import ru.fitnes.fitnestreaker.service.impl.UserServiceImpl;
-@Validated
+
 @Controller
 @RequiredArgsConstructor
 public class AuthController {
@@ -25,18 +25,21 @@ public class AuthController {
 
 
     @PostMapping("/registration")
-    public String registerUser(@ModelAttribute @Valid UserRequestDto userDto, BindingResult bindingResult) throws Exception {
+    public String registerUser(@Valid @ModelAttribute("userRequestDto") UserRequestDto userRequestDto,
+                               BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
             return "registration";
         }
+
         try {
-            userServiceImpl.registerNewUser(userDto);
-        } catch (Exception e) {
-            bindingResult.reject("registrationError", "Ошибка регистрации: " + e.getMessage());
+            userServiceImpl.registerNewUser(userRequestDto);
+        } catch (IllegalArgumentException e) {
+            bindingResult.rejectValue("email","error.userRequestDto",e.getMessage());
             return "registration";
         }
         return "redirect:/login";
     }
+
 
     @GetMapping("/login")
     public String showLoginForm() {
