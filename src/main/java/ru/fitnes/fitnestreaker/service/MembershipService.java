@@ -16,7 +16,7 @@ public interface MembershipService {
      MembershipResponseDto getById(Long id);
 
 
-    Set<MembershipResponseDto> findMembershipByUserId(Long id);
+    Set<MembershipResponseDto> findYourMemberships();
 
     List<MembershipResponseDto> getAll();
 

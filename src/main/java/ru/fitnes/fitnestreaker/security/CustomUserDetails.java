@@ -1,4 +1,4 @@
-package ru.fitnes.fitnestreaker.config;
+package ru.fitnes.fitnestreaker.security;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

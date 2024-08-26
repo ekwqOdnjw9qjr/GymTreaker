@@ -6,10 +6,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.fitnes.fitnestreaker.config.CustomUserDetails;
+import ru.fitnes.fitnestreaker.security.CustomUserDetails;
 import ru.fitnes.fitnestreaker.dto.request.UserRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.UserResponseDto;
 import ru.fitnes.fitnestreaker.entity.enums.Role;
@@ -22,7 +21,6 @@ import ru.fitnes.fitnestreaker.repository.UserRepository;
 import ru.fitnes.fitnestreaker.service.UserService;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import ru.fitnes.fitnestreaker.config.CustomUserDetails;
+import ru.fitnes.fitnestreaker.security.CustomUserDetails;
 import ru.fitnes.fitnestreaker.dto.request.CoachingTimeRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.CoachingTimeResponseDto;
 import ru.fitnes.fitnestreaker.entity.CoachingTime;
@@ -39,17 +39,12 @@ public class CoachingTimeServiceImpl implements CoachingTimeService {
     }
 
     @Override
-//    @PreAuthorize("#trainer.user.id == authentication.principal.id")
     public CoachingTimeRequestDto create(CoachingTimeRequestDto coachingTimeRequestDto, DayOfWeek dayOfWeek) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
         CoachingTime coachingTime = coachingTimeMapper.coachingTimeRequestToEntity(coachingTimeRequestDto);
-//        Set<Trainer> trainersSet = new HashSet<>();
-//        for (Long trainersIds : coachingTimeRequestDto.getTrainersIds()) {
-//            Trainer trainer = trainerRepository.getReferenceById(trainersIds);
-//            trainersSet.add(trainer);
-//        }
+
         Set<Trainer> trainer = trainerRepository.findTrainerByUserId(customUserDetails.getId());
 
         coachingTime.setDayOfWeek(dayOfWeek);
@@ -64,15 +59,5 @@ public class CoachingTimeServiceImpl implements CoachingTimeService {
     }
 
 
-    private Set<Trainer> getTrainersFromIds(Set<Long> trainerIds) {
-        return trainerIds.stream()
-                .map(id -> {
-                    Trainer trainer = trainerRepository.getReferenceById(id);
-                    if (trainer == null) {
-                        throw new EntityNotFoundException("Trainer not found with ID: " + id);
-                    }
-                    return trainer;
-                })
-                .collect(Collectors.toSet());
-    }
+
 }

@@ -10,11 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TrainerResponse {
+public class SessionCommentRequest {
 
-    @JsonProperty("firstName")
-    private String firstName;
-
-    @JsonProperty("lastName")
-    private String lastName;
+    @JsonProperty("trainerComment")
+    private String trainerComment;
 }

@@ -1,12 +1,8 @@
 package ru.fitnes.fitnestreaker.service;
 
 import jakarta.servlet.http.HttpSession;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import ru.fitnes.fitnestreaker.dto.request.UserRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.UserResponseDto;
-import ru.fitnes.fitnestreaker.entity.User;
 import ru.fitnes.fitnestreaker.entity.enums.Role;
 
 import java.util.List;

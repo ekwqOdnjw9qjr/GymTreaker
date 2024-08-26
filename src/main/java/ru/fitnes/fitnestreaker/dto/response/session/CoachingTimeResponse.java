@@ -15,11 +15,11 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class CoachingTimeResponse {
 
-    @JsonProperty("Start of training")
+    @JsonProperty("startOfTraining")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime startOfTraining;
 
-    @JsonProperty("End of training")
+    @JsonProperty("endOfTraining")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime endOfTraining;
 

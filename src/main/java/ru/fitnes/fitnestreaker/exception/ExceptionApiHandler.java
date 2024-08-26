@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.fitnes.fitnestreaker.baseresponse.BaseResponseService;
 import ru.fitnes.fitnestreaker.baseresponse.ResponseWrapper;
 
+
 @Slf4j
 @RestControllerAdvice
 @RequiredArgsConstructor

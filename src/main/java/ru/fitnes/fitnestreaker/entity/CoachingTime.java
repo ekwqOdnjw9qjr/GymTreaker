@@ -11,6 +11,7 @@ import lombok.Setter;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -23,6 +24,7 @@ public class CoachingTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @EqualsAndHashCode.Exclude
     private Long id;
 
     @Column(name = "start_of_training")
@@ -31,23 +33,19 @@ public class CoachingTime {
     @Column(name = "end_of_training")
     private LocalTime endOfTraining;
 
-
     @Column(name = "day_of_the_week")
     @Enumerated(EnumType.STRING)
     private DayOfWeek dayOfWeek;
-
 
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(name = "coaching_times_trainers",
             joinColumns = @JoinColumn(name = "coaching_time_id"),
             inverseJoinColumns = @JoinColumn(name = "trainer_id"))
+    @EqualsAndHashCode.Exclude
     private Set<Trainer> trainers = new HashSet<>();
 
-
     @OneToMany(mappedBy = "coachingTime", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
     private Set<Session> sessions = new HashSet<>();
-
-
-
 
 }

@@ -6,7 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import ru.fitnes.fitnestreaker.config.CustomUserDetails;
+import ru.fitnes.fitnestreaker.security.CustomUserDetails;
 import ru.fitnes.fitnestreaker.dto.request.TrainerRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.CoachingTimeResponseDto;
 import ru.fitnes.fitnestreaker.dto.response.TrainerResponseDto;
@@ -16,22 +16,20 @@ import ru.fitnes.fitnestreaker.exception.ErrorType;
 import ru.fitnes.fitnestreaker.exception.LocalException;
 import ru.fitnes.fitnestreaker.mapper.CoachingTimeMapper;
 import ru.fitnes.fitnestreaker.mapper.TrainerMapper;
-import ru.fitnes.fitnestreaker.repository.CoachingTimeRepository;
 import ru.fitnes.fitnestreaker.repository.TrainerRepository;
 import ru.fitnes.fitnestreaker.repository.UserRepository;
 import ru.fitnes.fitnestreaker.service.TrainerService;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class TrainerServiceImpl implements TrainerService {
 
     private final TrainerMapper trainerMapper;
-    private final TrainerRepository trainerRepository;
     private final UserRepository userRepository;
+    private final TrainerRepository trainerRepository;
     private final CoachingTimeMapper coachingTimeMapper;
 
     @Override
@@ -57,6 +55,8 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
 
+
+
     @Override
     public TrainerRequestDto create(TrainerRequestDto trainerRequestDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -68,6 +68,7 @@ public class TrainerServiceImpl implements TrainerService {
         return trainerMapper.trainerRequestToDto(savedTrainer);
     }
     // сделать метод чтобы тренер мог посмотреть кто на какой день к нему записан
+
 
 
     @Override

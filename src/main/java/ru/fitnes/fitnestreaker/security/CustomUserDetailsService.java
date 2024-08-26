@@ -1,4 +1,4 @@
-package ru.fitnes.fitnestreaker.config;
+package ru.fitnes.fitnestreaker.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.fitnes.fitnestreaker.entity.User;
 import ru.fitnes.fitnestreaker.repository.UserRepository;
-import ru.fitnes.fitnestreaker.repository.UserSpecification;
+import ru.fitnes.fitnestreaker.security.CustomUserDetails;
 
 @RequiredArgsConstructor
 @Service

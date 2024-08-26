@@ -6,12 +6,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import ru.fitnes.fitnestreaker.config.CustomUserDetails;
-import ru.fitnes.fitnestreaker.config.SecurityConfig;
+import ru.fitnes.fitnestreaker.security.CustomUserDetails;
 import ru.fitnes.fitnestreaker.dto.request.MembershipRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.MembershipResponseDto;
 import ru.fitnes.fitnestreaker.entity.Membership;
-import ru.fitnes.fitnestreaker.entity.User;
 import ru.fitnes.fitnestreaker.entity.enums.MembershipType;
 import ru.fitnes.fitnestreaker.entity.enums.MembershipStatus;
 import ru.fitnes.fitnestreaker.exception.ErrorType;
@@ -42,14 +40,14 @@ public class MembershipServiceImpl implements MembershipService {
         return membershipMapper.membershipResponseToDto(membership);
     }
     @Override
-    @PreAuthorize("#id == authentication.principal.id")
-    public Set<MembershipResponseDto> findMembershipByUserId(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(()-> new LocalException(ErrorType.NOT_FOUND,"Trainer with id: " + id + " not found."));
-        Set<Membership> membershipSet= user.getMemberships();
+    public Set<MembershipResponseDto> findYourMemberships() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        Set<Membership> membershipSet = membershipRepository.findMembershipsByUserId(customUserDetails.getId());
         return membershipMapper.membershipResponseToSetDto(membershipSet);
 
     }
+
 
     @Override
     public List<MembershipResponseDto> getAll() {
@@ -81,7 +79,7 @@ public class MembershipServiceImpl implements MembershipService {
         Long availableFreezeDays = membership.getFreezingDays();
         log.info("Available freeze days: " + availableFreezeDays);
         if (availableFreezeDays < freezeDays) {
-            throw new LocalException(ErrorType.CLIENT_ERROR, "You don't have enough freeze days available");
+            throw new LocalException(ErrorType.CLIENT_ERROR,"You don't have enough freeze days available");
         }
         LocalDateTime updatedEndDate = membership.getEndDate().plusDays(freezeDays);
         Long daysLeft = availableFreezeDays - freezeDays;
@@ -93,6 +91,7 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Override
+    @PreAuthorize("#id == authentication.principal.id")
     public MembershipStatus checkStatus(Long id) {
         Membership membership = membershipRepository.findById(id)
                 .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND, "Membership with id: " + id + " not found"));
@@ -104,11 +103,6 @@ public class MembershipServiceImpl implements MembershipService {
             return MembershipStatus.ACTIVE;
         }
     }
-
-
-    // Возможно стоит удалить или переработать мето update, т.к. я считаю что он должен обновлять тольоко владельца и
-    // наверное длинну обаниента(продливание)
-
     @Override
     public void delete(Long id) {
         membershipRepository.deleteById(id);
@@ -125,7 +119,7 @@ public class MembershipServiceImpl implements MembershipService {
             case QUARTERLY -> membershipType = MembershipType.QUARTERLY;
             case ANNUAL -> membershipType = MembershipType.ANNUAL;
             default -> {
-                return null; // Неизвестная продолжительность
+                return null;
             }
         }
         membership.setFreezingDays(membershipType.getFreezeDays());

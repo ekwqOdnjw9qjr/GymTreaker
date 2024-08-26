@@ -20,7 +20,7 @@ public class MembershipRequestDto {
 
     @JsonProperty("startDate")
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-ddTHH:mm")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime startDate;
 
 }

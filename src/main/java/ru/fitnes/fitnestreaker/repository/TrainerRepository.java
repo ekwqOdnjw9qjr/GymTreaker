@@ -11,4 +11,6 @@ public interface TrainerRepository extends JpaRepository<Trainer,Long> {
 
     Set<Trainer> findTrainerByUserId(Long id);
 
+    Trainer findByUserId(Long id);
+
 }

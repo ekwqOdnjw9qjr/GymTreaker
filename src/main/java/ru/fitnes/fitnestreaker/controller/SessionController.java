@@ -6,13 +6,17 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.fitnes.fitnestreaker.baseresponse.BaseResponseService;
 import ru.fitnes.fitnestreaker.baseresponse.ResponseWrapper;
 import ru.fitnes.fitnestreaker.dto.request.SessionRequestDto;
-import ru.fitnes.fitnestreaker.dto.response.SessionResponseDto;
+import ru.fitnes.fitnestreaker.dto.response.session.SessionCommentRequest;
+import ru.fitnes.fitnestreaker.dto.response.session.SessionResponseDto;
+import ru.fitnes.fitnestreaker.dto.response.session.SessionResponseInfo;
 import ru.fitnes.fitnestreaker.entity.Session;
+import ru.fitnes.fitnestreaker.entity.enums.SessionStatus;
 import ru.fitnes.fitnestreaker.service.impl.SessionServiceImpl;
 
 import java.util.List;
@@ -20,7 +24,7 @@ import java.util.List;
 @Tag(name = "Sessions", description = "Operation on sessions")
 @Validated
 @RestController
-@RequestMapping("/sessions")
+@RequestMapping("api/v1/sessions")
 @RequiredArgsConstructor
 public class SessionController {
 
@@ -31,9 +35,29 @@ public class SessionController {
             summary = "Getting a session by ID",
             description = "Allows you to upload a session by ID from the database"
     )
-    @GetMapping("/session/{id}")
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_TRAINER') or hasRole('ROLE_ADMIN')")
     public ResponseWrapper<SessionResponseDto> getSessionById(@PathVariable @Min(0) Long id) {
         return baseResponseService.wrapSuccessResponse(sessionServiceImpl.getById(id));
+    }
+
+    @Operation(
+            summary = "Getting info about your sessions",
+            description = "Allows you to upload info about your sessions"
+    )
+    @GetMapping("/my-sessions")
+    public ResponseWrapper<List<SessionResponseDto>> getInfoAboutYourSessions() {
+        return baseResponseService.wrapSuccessResponse(sessionServiceImpl.getYourSessions());
+    }
+
+    @Operation(
+            summary = "Getting info about a sessions by trainer id",
+            description = "A"
+    )
+    @GetMapping("/info")
+    @PreAuthorize("hasRole('ROLE_TRAINER')")
+    public ResponseWrapper<List<SessionResponseInfo>> getInfoAboutSessionsForTrainer() {
+        return baseResponseService.wrapSuccessResponse(sessionServiceImpl.getSessions());
     }
 
     @Operation(
@@ -41,41 +65,51 @@ public class SessionController {
             description = "Allows you to unload all sessions from the database"
     )
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_TRAINER') or hasRole('ROLE_ADMIN')")
     public ResponseWrapper<List<SessionResponseDto>> getAllSession() {
         return baseResponseService.wrapSuccessResponse(sessionServiceImpl.getAll());
     }
 
-    @Operation(summary = "Регистрация пациента.",
-            description = "Метод принимает в себя id-талона и  id-пациента. Возвращает зарегистрированный талон к врачу.")
-    @PatchMapping("/register/{ticketId}")
-    public Session registerPatientTicket(@PathVariable Long sessionId, @RequestParam Long userId) {
-        return sessionServiceImpl.registerSession(sessionId, userId);
+    @Operation(
+            summary = "Trainer can add comment for session",
+            description = "Allows trainer to add comment for session by ID"
+    )
+    @PatchMapping("/trainer-comment")
+    @PreAuthorize("hasRole('ROLE_TRAINER')")
+    public ResponseWrapper<SessionCommentRequest> addTrainerCommentForSessions(Long id
+            ,SessionCommentRequest sessionCommentRequest) {
+        return baseResponseService.wrapSuccessResponse(sessionServiceImpl.addTrainerCommentForSessions(id
+                ,sessionCommentRequest));
     }
 
     @Operation(
             summary = "Create a session",
             description = "Allows you to create a new session record in the database"
     )
-    @PostMapping("/create")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void createSession(SessionRequestDto sessionRequestDto) {
         sessionServiceImpl.create(sessionRequestDto);
     }
 
+
     @Operation(
-            summary = "Update session information",
-            description = "Allows you to update session information in the database"
+            summary = "Change session status",
+            description = "Allows trainer change session status by ID"
     )
-    @PutMapping("/update/{id}")
-    public ResponseWrapper<SessionRequestDto> updateSession(@RequestBody @Valid SessionRequestDto sessionRequestDto, @PathVariable Long id) {
-        return baseResponseService.wrapSuccessResponse(sessionServiceImpl.update(sessionRequestDto,id));
+    @PatchMapping("/session/{id}/status")
+    @PreAuthorize("hasRole('ROLE_TRAINER')")
+    public void changeSessionStatus(@PathVariable @Min(0)Long id,SessionStatus status) {
+        sessionServiceImpl.changeStatus(id,status);
     }
 
     @Operation(
             summary = "Delete a session by ID",
             description = "Allows you to delete a session by ID from the database"
     )
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ROLE_TRAINER') or hasRole('ROLE_ADMIN')")
     public void deleteSession(@PathVariable @Min(0) Long id) {
         sessionServiceImpl.delete(id);
     }

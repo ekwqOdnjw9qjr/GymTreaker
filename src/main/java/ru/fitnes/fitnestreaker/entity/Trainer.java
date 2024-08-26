@@ -1,14 +1,12 @@
 package ru.fitnes.fitnestreaker.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.data.annotation.CreatedBy;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -47,7 +45,8 @@ public class Trainer {
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     private List<CoachingTime> coachingTimes = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @CreatedBy
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "user_id",referencedColumnName = "id")
     private User user;
 }

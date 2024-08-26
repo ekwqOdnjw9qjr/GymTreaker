@@ -18,8 +18,8 @@ import java.time.LocalDateTime;
 @Schema(description = "Sessions")
 public class SessionRequestDto {
 
-    @JsonProperty("comment")
-    private String comment;
+    @JsonProperty("userComment")
+    private String userComment;
 
     @NotNull
     @JsonProperty("dateOfTraining")
