@@ -14,18 +14,15 @@ import java.util.Set;
 @Mapper(componentModel = "spring")
 public interface TrainerMapper {
 
-
     TrainerRequestDto trainerRequestToDto(Trainer trainer);
 
     Trainer trainerRequestToEntity(TrainerRequestDto trainerRequestDto);
 
-    @Mapping(source = "user.id", target = "userId")
+
     TrainerResponseDto trainerResponseToDto(Trainer trainer);
-    @Mapping(source = "user.id", target = "userId")
+
     List<TrainerResponseDto> trainerResponseToListDto(List<Trainer> trainerList);
 
      @Mapping(target = "id", ignore = true)
      void merge(@MappingTarget Trainer target,Trainer source);
-
-
 }

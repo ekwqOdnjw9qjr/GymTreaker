@@ -14,7 +14,6 @@ import ru.fitnes.fitnestreaker.security.CustomUserDetails;
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(username);
@@ -23,5 +22,4 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
         return new CustomUserDetails(user);
     }
-
 }

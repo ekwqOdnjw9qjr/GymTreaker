@@ -5,8 +5,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.fitnes.fitnestreaker.baseresponse.BaseResponseService;
@@ -19,13 +22,16 @@ import ru.fitnes.fitnestreaker.entity.Session;
 import ru.fitnes.fitnestreaker.entity.enums.SessionStatus;
 import ru.fitnes.fitnestreaker.service.impl.SessionServiceImpl;
 
+import java.time.LocalDate;
 import java.util.List;
 
-@Tag(name = "Sessions", description = "Operation on sessions")
+
 @Validated
+@Slf4j
 @RestController
 @RequestMapping("api/v1/sessions")
 @RequiredArgsConstructor
+@Tag(name = "Sessions", description = "Operation on sessions")
 public class SessionController {
 
     private final SessionServiceImpl sessionServiceImpl;
@@ -88,7 +94,9 @@ public class SessionController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createSession(SessionRequestDto sessionRequestDto) {
+    public void createSession(@RequestBody SessionRequestDto sessionRequestDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("User roles: {}", authentication.getAuthorities());
         sessionServiceImpl.create(sessionRequestDto);
     }
 
@@ -101,6 +109,10 @@ public class SessionController {
     @PreAuthorize("hasRole('ROLE_TRAINER')")
     public void changeSessionStatus(@PathVariable @Min(0)Long id,SessionStatus status) {
         sessionServiceImpl.changeStatus(id,status);
+    }
+    @GetMapping("/date")
+    public ResponseWrapper<List<SessionResponseInfo>> findByDate(LocalDate date) {
+        return baseResponseService.wrapSuccessResponse(sessionServiceImpl.checkSessionByDate(date));
     }
 
     @Operation(

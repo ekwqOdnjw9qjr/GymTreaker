@@ -16,6 +16,7 @@ import ru.fitnes.fitnestreaker.baseresponse.ResponseWrapper;
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class ExceptionApiHandler {
+
     private final BaseResponseService baseResponseService;
 
     @ExceptionHandler(Throwable.class)

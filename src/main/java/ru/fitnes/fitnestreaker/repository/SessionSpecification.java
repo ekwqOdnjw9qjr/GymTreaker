@@ -30,5 +30,4 @@ public class SessionSpecification {
             return criteriaBuilder.equal(root.get("trainer"), trainer);
         };
     }
-
 }

@@ -24,5 +24,4 @@ public class UserResponseDto {
 
     @JsonProperty("email")
     private String email;
-
 }

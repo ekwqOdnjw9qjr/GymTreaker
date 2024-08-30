@@ -1,6 +1,8 @@
 package ru.fitnes.fitnestreaker.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.fitnes.fitnestreaker.dto.response.MembershipResponseDto;
 import ru.fitnes.fitnestreaker.entity.Membership;
@@ -13,6 +15,6 @@ public interface MembershipRepository extends JpaRepository<Membership,Long> {
 
     Set<Membership> findMembershipsByUserId(Long id);
 
-    List<Long> findMembershipsListByUserId(Long id);
-
+    @Query("SELECT m.id FROM Membership m WHERE m.user.id = :userId")
+    List<Long> findMembershipsIdsByUserId(@Param("userId") Long userId);
 }

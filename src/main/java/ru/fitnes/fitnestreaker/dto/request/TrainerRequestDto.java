@@ -44,5 +44,4 @@ public class TrainerRequestDto {
     @JsonProperty("description")
     @Size(max = 7777,message = "The max size of description must not exceed 7777 characters.")
     private String description;
-
 }

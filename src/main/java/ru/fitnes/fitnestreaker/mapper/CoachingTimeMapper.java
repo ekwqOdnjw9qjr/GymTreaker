@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface CoachingTimeMapper {
 
-    @Mapping(source = "trainers", target = "trainersIds", qualifiedByName = "trainersToIds")
+
     CoachingTimeRequestDto coachingTimeRequestToDto(CoachingTime coachingTime);
 
     CoachingTime coachingTimeRequestToEntity(CoachingTimeRequestDto coachingTimeRequestDto);
@@ -25,15 +25,8 @@ public interface CoachingTimeMapper {
 
     List<CoachingTimeResponseDto> coachingTimeResponseToListDto(List<CoachingTime> coachingTimeList);
 
-
     Set<CoachingTimeResponseDto> coachingTimeResponseToSetDto(Set<CoachingTime> coachingTimeSet);
 
-    @Named("trainersToIds")
-    default List<Long> trainersToIds(Set<Trainer> trainers) {
-        return trainers.stream()
-                .map(Trainer::getId)
-                .collect(Collectors.toList());
-    }
 }
 
 

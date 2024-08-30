@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.fitnes.fitnestreaker.entity.enums.MembershipType;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,10 +22,10 @@ public class Membership {
     private Long id;
 
     @Column(name = "start_date")
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     @Column(name = "end_date")
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "membership_type")

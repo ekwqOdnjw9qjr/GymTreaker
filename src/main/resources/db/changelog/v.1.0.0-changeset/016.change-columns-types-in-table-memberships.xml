@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="016.change-columns-types-in-table-memberships" author="Roman">
+        <modifyDataType tableName="memberships"
+                        columnName="start_date"
+                        newDataType="DATE"/>
+        <modifyDataType tableName="memberships"
+                        columnName="end_date"
+                        newDataType="DATE"/>
+
+
+    </changeSet>
+</databaseChangeLog>

@@ -2,6 +2,7 @@ package ru.fitnes.fitnestreaker.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +76,7 @@ public class UserController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseWrapper<UserRequestDto> registerUser(@RequestBody UserRequestDto userDto) throws Exception {
+    public ResponseWrapper<UserRequestDto> registerUser(@RequestBody UserRequestDto userDto) throws Exception,MessagingException {
         return baseResponseService.wrapSuccessResponse(userServiceImpl.registerNewUser(userDto));
     }
 
@@ -108,11 +109,9 @@ public class UserController {
         userServiceImpl.delete(id,session);
     }
 
-
     @PostMapping("/logout")
     public void logout(HttpSession httpSession) {
         userServiceImpl.logout(httpSession);
     }
-
 
 }

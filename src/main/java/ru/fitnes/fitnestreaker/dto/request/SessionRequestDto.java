@@ -26,11 +26,6 @@ public class SessionRequestDto {
     private LocalDate dateOfTraining;
 
     @NotNull
-    @JsonProperty("trainerId")
-    private Long trainerId;
-
-    @NotNull
     @JsonProperty("coachingTimeId")
     private Long coachingTimeId;
-
 }

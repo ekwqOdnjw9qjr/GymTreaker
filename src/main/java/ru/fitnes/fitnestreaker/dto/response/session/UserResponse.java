@@ -17,5 +17,4 @@ public class UserResponse {
 
     @JsonProperty("lastName")
     private String lastName;
-
 }

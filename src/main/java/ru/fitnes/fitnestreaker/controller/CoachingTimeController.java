@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.fitnes.fitnestreaker.baseresponse.BaseResponseService;
 import ru.fitnes.fitnestreaker.baseresponse.ResponseWrapper;
 import ru.fitnes.fitnestreaker.dto.request.CoachingTimeRequestDto;
+import ru.fitnes.fitnestreaker.dto.response.CoachingTimeResponseDto;
 import ru.fitnes.fitnestreaker.service.impl.CoachingTimeServiceImpl;
 
 import java.time.DayOfWeek;
@@ -36,6 +37,11 @@ public class CoachingTimeController {
                                                               DayOfWeek dayOfWeek) {
         return baseResponseService.wrapSuccessResponse(coachingTimeServiceImpl
                 .create(coachingTimeRequestDto,dayOfWeek));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseWrapper<CoachingTimeResponseDto> getByID(@PathVariable Long id) {
+        return baseResponseService.wrapSuccessResponse(coachingTimeServiceImpl.findById(id));
     }
 
     @Operation(

@@ -27,5 +27,4 @@ public class SessionResponseInfo {
 
     @JsonProperty("comment")
     private String comment;
-
 }

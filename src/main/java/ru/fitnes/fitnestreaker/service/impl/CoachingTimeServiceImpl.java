@@ -15,6 +15,7 @@ import ru.fitnes.fitnestreaker.exception.LocalException;
 import ru.fitnes.fitnestreaker.mapper.CoachingTimeMapper;
 import ru.fitnes.fitnestreaker.repository.CoachingTimeRepository;
 import ru.fitnes.fitnestreaker.repository.TrainerRepository;
+import ru.fitnes.fitnestreaker.security.SecurityConfig;
 import ru.fitnes.fitnestreaker.service.CoachingTimeService;
 
 import java.time.DayOfWeek;
@@ -25,31 +26,31 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CoachingTimeServiceImpl implements CoachingTimeService {
 
-    private final CoachingTimeRepository coachingTimeRepository;
-    private final CoachingTimeMapper coachingTimeMapper;
+    private final SecurityConfig securityConfig;
     private final TrainerRepository trainerRepository;
-
+    private final CoachingTimeMapper coachingTimeMapper;
+    private final CoachingTimeRepository coachingTimeRepository;
 
     @Override
     public CoachingTimeResponseDto findById(Long id) {
         CoachingTime coachingTime = coachingTimeRepository.findById(id)
                 .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,
                         "Coaching time with id: " + id + " not found."));
+
         return coachingTimeMapper.coachingTimeResponseToDto(coachingTime);
     }
 
     @Override
     public CoachingTimeRequestDto create(CoachingTimeRequestDto coachingTimeRequestDto, DayOfWeek dayOfWeek) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
         CoachingTime coachingTime = coachingTimeMapper.coachingTimeRequestToEntity(coachingTimeRequestDto);
 
-        Set<Trainer> trainer = trainerRepository.findTrainerByUserId(customUserDetails.getId());
+        Trainer trainer = trainerRepository.findTrainerByUserId(securityConfig.getCurrentUser().getId());
 
         coachingTime.setDayOfWeek(dayOfWeek);
-        coachingTime.setTrainers(trainer);
+        coachingTime.setTrainer(trainer);
         CoachingTime savedCoachingTime = coachingTimeRepository.save(coachingTime);
+
         return coachingTimeMapper.coachingTimeRequestToDto(savedCoachingTime);
     }
 

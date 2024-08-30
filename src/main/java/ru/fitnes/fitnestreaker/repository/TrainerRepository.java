@@ -9,8 +9,7 @@ import java.util.Set;
 @Repository
 public interface TrainerRepository extends JpaRepository<Trainer,Long> {
 
-    Set<Trainer> findTrainerByUserId(Long id);
+    Trainer findTrainerByUserId(Long id);
 
     Trainer findByUserId(Long id);
-
 }

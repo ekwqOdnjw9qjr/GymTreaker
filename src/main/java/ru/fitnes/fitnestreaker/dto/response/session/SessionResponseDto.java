@@ -30,5 +30,4 @@ public class SessionResponseDto {
 
     @JsonProperty("coachingTimeInfo")
     private CoachingTimeResponse coachingTime;
-
 }

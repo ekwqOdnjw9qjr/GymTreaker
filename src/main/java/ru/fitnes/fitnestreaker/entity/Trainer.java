@@ -38,11 +38,6 @@ public class Trainer {
     private String description;
 
     @OneToMany(mappedBy = "trainer", cascade = CascadeType.REMOVE,  fetch = FetchType.LAZY)
-    private Set<Session> sessions = new HashSet<>();
-
-
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY, mappedBy = "trainers")
-    @OnDelete(action = OnDeleteAction.NO_ACTION)
     private List<CoachingTime> coachingTimes = new ArrayList<>();
 
     @CreatedBy

@@ -2,6 +2,7 @@ package ru.fitnes.fitnestreaker.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,8 +18,10 @@ import ru.fitnes.fitnestreaker.exception.LocalException;
 import ru.fitnes.fitnestreaker.mapper.MembershipMapper;
 import ru.fitnes.fitnestreaker.repository.MembershipRepository;
 import ru.fitnes.fitnestreaker.repository.UserRepository;
+import ru.fitnes.fitnestreaker.security.SecurityConfig;
 import ru.fitnes.fitnestreaker.service.MembershipService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -28,9 +31,10 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class MembershipServiceImpl implements MembershipService {
 
+    private final SecurityConfig securityConfig;
+    private final UserRepository userRepository;
     private final MembershipMapper membershipMapper;
     private final MembershipRepository membershipRepository;
-    private final UserRepository userRepository;
 
 
     @Override
@@ -39,15 +43,16 @@ public class MembershipServiceImpl implements MembershipService {
                 .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND, "Membership with id: " + id + " not found"));
         return membershipMapper.membershipResponseToDto(membership);
     }
+
     @Override
     public Set<MembershipResponseDto> findYourMemberships() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        Set<Membership> membershipSet = membershipRepository.findMembershipsByUserId(customUserDetails.getId());
+
+
+        Set<Membership> membershipSet = membershipRepository
+                .findMembershipsByUserId(securityConfig.getCurrentUser().getId());
+
         return membershipMapper.membershipResponseToSetDto(membershipSet);
-
     }
-
 
     @Override
     public List<MembershipResponseDto> getAll() {
@@ -57,14 +62,17 @@ public class MembershipServiceImpl implements MembershipService {
 
     @Override
     public MembershipRequestDto create(MembershipRequestDto membershipRequestDto,MembershipType membershipType) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
+
         Membership membership = membershipMapper.membershipRequestToEntity(membershipRequestDto);
-        membership.setUser(userRepository.getReferenceById(customUserDetails.getId()));
+        membership.setUser(userRepository.getReferenceById(securityConfig.getCurrentUser().getId()));
         membership.setMembershipType(membershipType);
-        LocalDateTime endDate = calculateEndDate(membership);
+
+        LocalDate endDate = calculateEndDate(membership);
         membership.setEndDate(endDate);
+
         Membership savedMembership = membershipRepository.save(membership);
+
         return membershipMapper.membershipRequestToDto(savedMembership);
     }
 
@@ -74,42 +82,59 @@ public class MembershipServiceImpl implements MembershipService {
         if (freezeDays < 0) {
             throw new LocalException(ErrorType.CLIENT_ERROR, "The number of freeze days cannot be negative");
         }
+
         Membership membership = membershipRepository.findById(id)
                 .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND, "Membership with id: " + id + " not found"));
         Long availableFreezeDays = membership.getFreezingDays();
+
         log.info("Available freeze days: " + availableFreezeDays);
         if (availableFreezeDays < freezeDays) {
             throw new LocalException(ErrorType.CLIENT_ERROR,"You don't have enough freeze days available");
         }
-        LocalDateTime updatedEndDate = membership.getEndDate().plusDays(freezeDays);
-        Long daysLeft = availableFreezeDays - freezeDays;
+
+        LocalDate updatedEndDate = membership.getEndDate().plusDays(freezeDays);
         membership.setEndDate(updatedEndDate);
+
+        Long daysLeft = availableFreezeDays - freezeDays;
         membership.setFreezingDays(daysLeft);
+
         log.info("Days left after freezing: " + daysLeft);
+
         Membership savedMembership = membershipRepository.save(membership);
+
         return membershipMapper.membershipResponseToDto(savedMembership);
     }
 
     @Override
-    @PreAuthorize("#id == authentication.principal.id")
     public MembershipStatus checkStatus(Long id) {
         Membership membership = membershipRepository.findById(id)
                 .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND, "Membership with id: " + id + " not found"));
-        LocalDateTime membershipEndDate = membership.getEndDate();
-        LocalDateTime localDateTimeNow = LocalDateTime.now();
-        if (localDateTimeNow.isAfter(membershipEndDate)) {
+
+        if (!membership.getUser().getId().equals(securityConfig.getCurrentUser().getId())) {
+            throw new LocalException(ErrorType.CLIENT_ERROR,
+                    "You do not have access to change the status of this session.");
+        }
+
+        LocalDate membershipEndDate = membership.getEndDate();
+
+        LocalDate localDateNow = LocalDate.now();
+
+        if (localDateNow.isAfter(membershipEndDate)) {
             return MembershipStatus.INACTIVE;
         } else {
             return MembershipStatus.ACTIVE;
         }
     }
+
+    // добавить поле статус в сущность memberships и удалить этот метод
+
     @Override
     public void delete(Long id) {
         membershipRepository.deleteById(id);
     }
 
     @Override
-    public LocalDateTime calculateEndDate(Membership membership) {
+    public LocalDate calculateEndDate(Membership membership) {
         MembershipType membershipType = null;
         switch (membership.getMembershipType()) {
             case SMALL -> membershipType = MembershipType.SMALL;
@@ -125,6 +150,4 @@ public class MembershipServiceImpl implements MembershipService {
         membership.setFreezingDays(membershipType.getFreezeDays());
         return membership.getStartDate().plusDays(membershipType.getDuration());
     }
-
 }
-

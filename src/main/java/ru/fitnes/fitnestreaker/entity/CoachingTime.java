@@ -37,15 +37,12 @@ public class CoachingTime {
     @Enumerated(EnumType.STRING)
     private DayOfWeek dayOfWeek;
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
-    @JoinTable(name = "coaching_times_trainers",
-            joinColumns = @JoinColumn(name = "coaching_time_id"),
-            inverseJoinColumns = @JoinColumn(name = "trainer_id"))
+    @ManyToOne
+    @JoinColumn(name = "trainer_id")
     @EqualsAndHashCode.Exclude
-    private Set<Trainer> trainers = new HashSet<>();
+    private Trainer trainer;
 
     @OneToMany(mappedBy = "coachingTime", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<Session> sessions = new HashSet<>();
-
 }

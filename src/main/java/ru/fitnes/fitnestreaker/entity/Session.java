@@ -28,10 +28,6 @@ public class Session {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "trainer_id")
-    private Trainer trainer;
-
-    @ManyToOne
     @JoinColumn(name = "coaching_time_id")
     private CoachingTime coachingTime;
 
@@ -44,10 +40,4 @@ public class Session {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private SessionStatus status;
-
-
-    // возможно все таки добавить статус пример: в ожидании, проведена, отменена, мб что то еще
-
-
-
 }

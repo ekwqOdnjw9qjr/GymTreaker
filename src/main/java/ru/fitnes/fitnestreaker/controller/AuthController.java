@@ -1,5 +1,6 @@
 package ru.fitnes.fitnestreaker.controller;
 
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -26,7 +27,7 @@ public class AuthController {
 
     @PostMapping("/registration")
     public String registerUser(@Valid @ModelAttribute("userRequestDto") UserRequestDto userRequestDto,
-                               BindingResult bindingResult){
+                               BindingResult bindingResult) throws MessagingException {
         if (bindingResult.hasErrors()) {
             return "registration";
         }

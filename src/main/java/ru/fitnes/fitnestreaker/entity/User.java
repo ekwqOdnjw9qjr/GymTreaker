@@ -55,6 +55,4 @@ public class User  {
     @OneToOne(mappedBy = "user",fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonBackReference
     private Trainer trainer;
-
-
 }

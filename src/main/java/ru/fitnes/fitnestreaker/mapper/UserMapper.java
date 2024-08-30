@@ -23,6 +23,4 @@ public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "role", ignore = true)
     void merge(@MappingTarget User target, User source);
-
-
 }

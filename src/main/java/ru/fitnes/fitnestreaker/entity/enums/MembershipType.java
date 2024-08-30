@@ -20,6 +20,5 @@ public enum MembershipType {
         this.duration = duration;
         this.freezeDays = freezeDays;
     }
-
 }
 

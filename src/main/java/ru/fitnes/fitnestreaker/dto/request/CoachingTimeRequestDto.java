@@ -21,7 +21,6 @@ import java.util.List;
 @Schema(name = "Coaching Time", description = "Operation with CoachingTime")
 public class CoachingTimeRequestDto {
 
-
     @Schema(example = "07:10")
     @JsonProperty("startOfTraining")
     @DateTimeFormat(pattern = "HH:mm")
@@ -31,8 +30,5 @@ public class CoachingTimeRequestDto {
     @JsonProperty("endOfTraining")
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime endOfTraining;
-
-    @JsonProperty("trainersIds")
-    private List<Long> trainersIds;
 
 }

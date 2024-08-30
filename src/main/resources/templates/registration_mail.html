@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Our Service!</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container email-container">
+    <div class="email-header text-center">
+        <h1>Welcome, <span th:text="${username}">User</span>!</h1>
+    </div>
+    <div class="email-body">
+        <p>Thank you for registering with us.</p>
+        <p>We are excited to have you on board. Here's what you can expect:</p>
+        <ul class="list-unstyled">
+            <li><i class="fas fa-check-circle"></i> Exclusive content and offers</li>
+            <li><i class="fas fa-check-circle"></i> Personalized recommendations</li>
+            <li><i class="fas fa-check-circle"></i> Updates on our latest features</li>
+        </ul>
+        <p>If you have any questions, feel free to reply to this email. We're here to help!</p>
+        <p>Best regards,<br>The <strong>Our Company</strong> Team</p>
+    </div>
+    <div class="email-footer">
+        <p>&copy; 2024 ZXC Company. All rights reserved.</p>
+    </div>
+</div>
+
+<!-- Подключение FontAwesome (по желанию, для иконок) -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>

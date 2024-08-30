@@ -17,12 +17,10 @@ public interface MembershipMapper {
 
     Membership membershipRequestToEntity(MembershipRequestDto membershipRequestDto);
 
-    @Mapping(source = "user.id", target = "userId")
+
     MembershipResponseDto membershipResponseToDto(Membership membership);
-    @Mapping(source = "user.id", target = "userId")
+
     List<MembershipResponseDto> membershipResponseToListDto(List<Membership> membershipList);
-    @Mapping(source = "user.id", target = "userId")
+
     Set<MembershipResponseDto> membershipResponseToSetDto(Set<Membership> membershipSet);
-
-
 }

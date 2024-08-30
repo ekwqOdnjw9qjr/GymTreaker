@@ -20,9 +20,11 @@ import ru.fitnes.fitnestreaker.exception.ErrorType;
 import ru.fitnes.fitnestreaker.exception.LocalException;
 import ru.fitnes.fitnestreaker.mapper.SessionMapper;
 import ru.fitnes.fitnestreaker.repository.*;
+import ru.fitnes.fitnestreaker.security.SecurityConfig;
 import ru.fitnes.fitnestreaker.service.SessionService;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -32,6 +34,7 @@ import java.util.List;
 public class  SessionServiceImpl implements SessionService {
 
     private final SessionMapper sessionMapper;
+    private final SecurityConfig securityConfig;
     private final UserRepository userRepository;
     private final SessionRepository sessionRepository;
     private final TrainerRepository trainerRepository;
@@ -45,30 +48,29 @@ public class  SessionServiceImpl implements SessionService {
     public SessionResponseDto getById(Long id) {
         Session session = sessionRepository.findById(id)
                 .orElseThrow(()-> new LocalException(ErrorType.NOT_FOUND,"Session with id: " + id + " not found."));
+
         return sessionMapper.sessionResponseToDto(session);
     }
 
     @Override
     public List<SessionResponseDto> getYourSessions() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        List<Session> session = sessionRepository.findSessionByUserId(customUserDetails.getId());
-        return  sessionMapper.sessionResponseToListDto(session);
+
+        List<Session> session = sessionRepository.findSessionByUserId(securityConfig.getCurrentUser().getId());
+
+        return sessionMapper.sessionResponseToListDto(session);
     }
 
     @Override
     public List<SessionResponseDto> getAll() {
         List<Session> sessionList = sessionRepository.findAll();
+
         return sessionMapper.sessionResponseToListDto(sessionList);
     }
 
-
     @Override
     public List<SessionResponseInfo> getSessions() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        Trainer trainer = trainerRepository.findByUserId(customUserDetails.getId());
+        Trainer trainer = trainerRepository.findByUserId(securityConfig.getCurrentUser().getId());
 
         Specification<Session> spec = Specification.where(SessionSpecification.hasStatus(SessionStatus.SCHEDULED)
                 .and(SessionSpecification.hasTrainer(trainer)));
@@ -81,10 +83,9 @@ public class  SessionServiceImpl implements SessionService {
 
     @Override
     public SessionRequestDto create(SessionRequestDto sessionRequestDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        List<Long> membershipsListId = membershipRepository.findMembershipsListByUserId(customUserDetails.getId());
+        List<Long> membershipsListId = membershipRepository.
+                findMembershipsIdsByUserId(securityConfig.getCurrentUser().getId());
 
         boolean activeMembership = membershipsListId.stream()
                 .anyMatch(id -> membershipService.checkStatus(id) == MembershipStatus.ACTIVE);
@@ -100,36 +101,58 @@ public class  SessionServiceImpl implements SessionService {
             throw new IllegalArgumentException("День недели в CoachingTime не совпадает с днем недели в дате тренировки.");
         }
         List<Session> conflictingSessions = sessionRepository.findConflictingSessions(
-                sessionRequestDto.getTrainerId(),
                 sessionRequestDto.getCoachingTimeId(),
                 sessionRequestDto.getDateOfTraining(),
                 coachingTime.getDayOfWeek());
+
         if (!conflictingSessions.isEmpty()) {
             throw new IllegalArgumentException("Session already exists for this trainer, time, and date.");
         }
         Session session = sessionMapper.sessionRequestToEntity(sessionRequestDto);
         session.setStatus(SessionStatus.SCHEDULED);
-        session.setTrainer(trainerRepository.getReferenceById(sessionRequestDto.getTrainerId()));
-        session.setUser(userRepository.getReferenceById(customUserDetails.getId())); // Установка пользователя
+        session.setUser(userRepository.getReferenceById(securityConfig.getCurrentUser().getId()));
         Session savedSession = sessionRepository.save(session);
+
         return sessionMapper.sessionRequestToDto(savedSession);
     }
 
-    
+    // переработаь систему статусов убрать метод и сделать колону в бд
+
 
     @Override
     public SessionCommentRequest addTrainerCommentForSessions(Long id,SessionCommentRequest sessionCommentRequest) {
         Session session = sessionRepository.findById(id)
                 .orElseThrow(()-> new LocalException(ErrorType.NOT_FOUND,"Session with id: " + id + " not found."));
+
+        if (!session.getCoachingTime().getTrainer().getUser().getId().equals(securityConfig.getCurrentUser().getId())) {
+            throw new LocalException(ErrorType.CLIENT_ERROR,
+                    "You do not have access to change the status of this session.");
+        }
+
         session.setTrainerComment(sessionCommentRequest.getTrainerComment());
+
         Session savedSession = sessionRepository.save(session);
+
         return sessionMapper.sessionCommentRequestToDto(savedSession);
+    }
+
+    @Override
+    public List<SessionResponseInfo> checkSessionByDate(LocalDate date) {
+
+        List<Session> sessionList = sessionRepository.findSessionsByDate(date);
+
+        return sessionMapper.sessionResponseInfoToDto(sessionList);
     }
 
     @Override
     public void changeStatus(Long id, SessionStatus status) {
         Session session = sessionRepository.findById(id)
                 .orElseThrow(()-> new LocalException(ErrorType.NOT_FOUND,"Session with id: " + id + " not found."));
+
+        if (!session.getCoachingTime().getTrainer().getUser().getId().equals(securityConfig.getCurrentUser().getId())) {
+            throw new LocalException(ErrorType.CLIENT_ERROR,
+                    "You do not have access to change the status of this session.");
+        }
 
         if (session.getStatus() == SessionStatus.COMPLETED || session.getStatus() == SessionStatus.CANCELLED) {
             throw new LocalException(ErrorType.CLIENT_ERROR, "Cannot change status of a completed session.");
@@ -143,6 +166,5 @@ public class  SessionServiceImpl implements SessionService {
     public void delete(Long id) {
         sessionRepository.deleteById(id);
     }
-
 
 }

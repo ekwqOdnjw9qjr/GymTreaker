@@ -30,6 +30,4 @@ public class TrainerResponseDto {
     @JsonProperty("description")
     private String description;;
 
-    @JsonProperty("userId")
-    private Long userId;
 }

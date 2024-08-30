@@ -1,5 +1,6 @@
 package ru.fitnes.fitnestreaker.service;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import ru.fitnes.fitnestreaker.dto.request.UserRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.UserResponseDto;
@@ -17,16 +18,13 @@ public interface UserService {
 
      List<UserResponseDto> getAll();
 
-     UserRequestDto registerNewUser(UserRequestDto userRequestDto);
+     UserRequestDto registerNewUser(UserRequestDto userRequestDto) throws MessagingException;
 
      UserRequestDto update(UserRequestDto dto, Long id);
 
      UserResponseDto changeRole(Long id, Role role);
 
-
      void delete(Long id, HttpSession session);
 
      void logout(HttpSession session);
-
-
 }

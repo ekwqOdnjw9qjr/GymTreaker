@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.fitnes.fitnestreaker.dto.response.session.TrainerResponse;
 
 
 import java.time.DayOfWeek;
@@ -22,6 +23,9 @@ public class CoachingTimeResponseDto {
     @JsonProperty("id")
     private Long id;
 
+    @JsonProperty("dayOfWeek")
+    private DayOfWeek dayOfWeek;
+
     @JsonProperty("startOfTraining")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime startOfTraining;
@@ -30,7 +34,6 @@ public class CoachingTimeResponseDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime endOfTraining;
 
-    @JsonProperty("dayOfWeek")
-    private DayOfWeek dayOfWeek;
-
+    @JsonProperty("trainerInfo")
+    private TrainerResponse trainer;
 }

@@ -21,6 +21,4 @@ public interface TrainerService {
      List<CoachingTimeResponseDto> findCoachingTimeByTrainerId(Long id);
 
      void delete(Long id);
-
-
 }

@@ -28,8 +28,9 @@ import java.util.Set;
 @Tag(name = "Memberships",description = "Operation on memberships")
 public class MembershipController {
 
-    private final MembershipServiceImpl membershipServiceImpl;
+
     private final BaseResponseService baseResponseService;
+    private final MembershipServiceImpl membershipServiceImpl;
 
     @Operation(
             summary = "Getting a membership by ID",
@@ -90,7 +91,6 @@ public class MembershipController {
         return baseResponseService.wrapSuccessResponse(membershipServiceImpl.freezeMembership(id, freezeDays));
     }
 
-
     @Operation(
             summary = "Delete a membership by ID",
             description = "Allows you to delete a membership by ID from the database"
@@ -100,17 +100,4 @@ public class MembershipController {
     public void deleteMembership(@PathVariable @Min(0) Long id) {
         membershipServiceImpl.delete(id);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

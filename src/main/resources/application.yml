@@ -37,8 +37,6 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-#    show-sql: true
-#    defer-datasource-initialization: true
 
   sql:
     init:
@@ -47,13 +45,13 @@ spring:
 
 
   thymeleaf:
-        prefix: classpath:/templates/
-        suffix: .html
-        mode: HTML
-        encoding: UTF-8
-        cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
 
-        
+
 logging:
   level:
     org:
@@ -63,4 +61,3 @@ logging:
           descriptor:
             sql:
               BasicBinder: TRACE
-

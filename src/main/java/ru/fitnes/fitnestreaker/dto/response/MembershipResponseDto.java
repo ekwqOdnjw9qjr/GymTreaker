@@ -11,6 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import ru.fitnes.fitnestreaker.entity.enums.MembershipType;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -25,13 +26,13 @@ public class MembershipResponseDto {
 
     @JsonProperty("startDate")
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime startDate;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate startDate;
 
     @JsonProperty("endDate")
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime endDate;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate endDate;
 
     @JsonProperty("membershipType")
     private MembershipType membershipType;
@@ -39,6 +40,4 @@ public class MembershipResponseDto {
     @JsonProperty("freezingDays")
     private Long freezingDays;
 
-    @JsonProperty("userId")
-    private Long userId;
 }
