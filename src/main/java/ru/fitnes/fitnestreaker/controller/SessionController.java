@@ -2,14 +2,11 @@ package ru.fitnes.fitnestreaker.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.fitnes.fitnestreaker.baseresponse.BaseResponseService;
@@ -18,7 +15,6 @@ import ru.fitnes.fitnestreaker.dto.request.SessionRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.session.SessionCommentRequest;
 import ru.fitnes.fitnestreaker.dto.response.session.SessionResponseDto;
 import ru.fitnes.fitnestreaker.dto.response.session.SessionResponseInfo;
-import ru.fitnes.fitnestreaker.entity.Session;
 import ru.fitnes.fitnestreaker.entity.enums.SessionStatus;
 import ru.fitnes.fitnestreaker.service.impl.SessionServiceImpl;
 
@@ -94,12 +90,9 @@ public class SessionController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createSession(@RequestBody SessionRequestDto sessionRequestDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        log.info("User roles: {}", authentication.getAuthorities());
-        sessionServiceImpl.create(sessionRequestDto);
+    public ResponseWrapper<SessionResponseDto> createSession(@RequestBody SessionRequestDto sessionRequestDto) {
+        return baseResponseService.wrapSuccessResponse(sessionServiceImpl.create(sessionRequestDto));
     }
-
 
     @Operation(
             summary = "Change session status",
@@ -110,6 +103,7 @@ public class SessionController {
     public void changeSessionStatus(@PathVariable @Min(0)Long id,SessionStatus status) {
         sessionServiceImpl.changeStatus(id,status);
     }
+
     @GetMapping("/date")
     public ResponseWrapper<List<SessionResponseInfo>> findByDate(LocalDate date) {
         return baseResponseService.wrapSuccessResponse(sessionServiceImpl.checkSessionByDate(date));

@@ -2,7 +2,6 @@ package ru.fitnes.fitnestreaker.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +17,6 @@ import ru.fitnes.fitnestreaker.entity.enums.MembershipType;
 import ru.fitnes.fitnestreaker.service.impl.MembershipServiceImpl;
 
 import java.util.List;
-import java.util.Set;
 
 
 @Validated
@@ -57,7 +55,7 @@ public class MembershipController {
             description = "Allows you to upload your memberships from the database"
     )
     @GetMapping("/my-memberships")
-    public ResponseWrapper<Set<MembershipResponseDto>> getYourMembership() {
+    public ResponseWrapper<List<MembershipResponseDto>> getYourMembership() {
         return baseResponseService.wrapSuccessResponse(membershipServiceImpl.findYourMemberships());
     }
 
@@ -76,7 +74,7 @@ public class MembershipController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseWrapper<MembershipRequestDto> createMembership(MembershipRequestDto membershipRequestDto,
+    public ResponseWrapper<MembershipResponseDto> createMembership(@RequestBody MembershipRequestDto membershipRequestDto,
                                                                   MembershipType membershipType) {
         return baseResponseService.wrapSuccessResponse(membershipServiceImpl.create(membershipRequestDto,
                 membershipType));
@@ -87,7 +85,7 @@ public class MembershipController {
             description = "Adds a certain number of days specified in the membership type to your subscription end date"
     )
     @PatchMapping("/membership/{id}/frost")
-    public ResponseWrapper<MembershipResponseDto> freezeMembership(@PathVariable  Long id, Long freezeDays) {
+    public ResponseWrapper<MembershipResponseDto> freezeMembership(@PathVariable Long id, Long freezeDays) {
         return baseResponseService.wrapSuccessResponse(membershipServiceImpl.freezeMembership(id, freezeDays));
     }
 

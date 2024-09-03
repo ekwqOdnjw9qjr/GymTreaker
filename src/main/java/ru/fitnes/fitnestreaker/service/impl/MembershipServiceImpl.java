@@ -2,17 +2,13 @@ package ru.fitnes.fitnestreaker.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import ru.fitnes.fitnestreaker.security.CustomUserDetails;
 import ru.fitnes.fitnestreaker.dto.request.MembershipRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.MembershipResponseDto;
 import ru.fitnes.fitnestreaker.entity.Membership;
-import ru.fitnes.fitnestreaker.entity.enums.MembershipType;
 import ru.fitnes.fitnestreaker.entity.enums.MembershipStatus;
+import ru.fitnes.fitnestreaker.entity.enums.MembershipType;
 import ru.fitnes.fitnestreaker.exception.ErrorType;
 import ru.fitnes.fitnestreaker.exception.LocalException;
 import ru.fitnes.fitnestreaker.mapper.MembershipMapper;
@@ -22,9 +18,7 @@ import ru.fitnes.fitnestreaker.security.SecurityConfig;
 import ru.fitnes.fitnestreaker.service.MembershipService;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 @Service
@@ -45,13 +39,13 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Override
-    public Set<MembershipResponseDto> findYourMemberships() {
+    public List<MembershipResponseDto> findYourMemberships() {
 
 
-        Set<Membership> membershipSet = membershipRepository
+        List<Membership> membershipSet = membershipRepository
                 .findMembershipsByUserId(securityConfig.getCurrentUser().getId());
 
-        return membershipMapper.membershipResponseToSetDto(membershipSet);
+        return membershipMapper.membershipResponseToListDto(membershipSet);
     }
 
     @Override
@@ -61,7 +55,7 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Override
-    public MembershipRequestDto create(MembershipRequestDto membershipRequestDto,MembershipType membershipType) {
+    public MembershipResponseDto create(MembershipRequestDto membershipRequestDto,MembershipType membershipType) {
 
 
         Membership membership = membershipMapper.membershipRequestToEntity(membershipRequestDto);
@@ -73,7 +67,7 @@ public class MembershipServiceImpl implements MembershipService {
 
         Membership savedMembership = membershipRepository.save(membership);
 
-        return membershipMapper.membershipRequestToDto(savedMembership);
+        return membershipMapper.membershipResponseToDto(savedMembership);
     }
 
     @Override
@@ -125,9 +119,7 @@ public class MembershipServiceImpl implements MembershipService {
             return MembershipStatus.ACTIVE;
         }
     }
-
     // добавить поле статус в сущность memberships и удалить этот метод
-
     @Override
     public void delete(Long id) {
         membershipRepository.deleteById(id);

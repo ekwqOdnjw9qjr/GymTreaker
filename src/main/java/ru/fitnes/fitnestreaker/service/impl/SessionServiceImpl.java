@@ -3,17 +3,13 @@ package ru.fitnes.fitnestreaker.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import ru.fitnes.fitnestreaker.security.CustomUserDetails;
 import ru.fitnes.fitnestreaker.dto.request.SessionRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.CoachingTimeResponseDto;
 import ru.fitnes.fitnestreaker.dto.response.session.SessionCommentRequest;
 import ru.fitnes.fitnestreaker.dto.response.session.SessionResponseDto;
 import ru.fitnes.fitnestreaker.dto.response.session.SessionResponseInfo;
 import ru.fitnes.fitnestreaker.entity.Session;
-import ru.fitnes.fitnestreaker.entity.Trainer;
 import ru.fitnes.fitnestreaker.entity.enums.MembershipStatus;
 import ru.fitnes.fitnestreaker.entity.enums.SessionStatus;
 import ru.fitnes.fitnestreaker.exception.ErrorType;
@@ -70,10 +66,10 @@ public class  SessionServiceImpl implements SessionService {
     @Override
     public List<SessionResponseInfo> getSessions() {
 
-        Trainer trainer = trainerRepository.findByUserId(securityConfig.getCurrentUser().getId());
+        Long trainerId = trainerRepository.findByUserId(securityConfig.getCurrentUser().getId());
 
         Specification<Session> spec = Specification.where(SessionSpecification.hasStatus(SessionStatus.SCHEDULED)
-                .and(SessionSpecification.hasTrainer(trainer)));
+                .and(SessionSpecification.hasTrainer(trainerId)));
         List<Session> sessionList = sessionRepository.findAll(spec);
 
         return sessionMapper.sessionResponseInfoToDto(sessionList);
@@ -82,7 +78,7 @@ public class  SessionServiceImpl implements SessionService {
     // нужно сделать сортировку по статусу
 
     @Override
-    public SessionRequestDto create(SessionRequestDto sessionRequestDto) {
+    public SessionResponseDto create(SessionRequestDto sessionRequestDto) {
 
         List<Long> membershipsListId = membershipRepository.
                 findMembershipsIdsByUserId(securityConfig.getCurrentUser().getId());
@@ -113,7 +109,7 @@ public class  SessionServiceImpl implements SessionService {
         session.setUser(userRepository.getReferenceById(securityConfig.getCurrentUser().getId()));
         Session savedSession = sessionRepository.save(session);
 
-        return sessionMapper.sessionRequestToDto(savedSession);
+        return sessionMapper.sessionResponseToDto(savedSession);
     }
 
     // переработаь систему статусов убрать метод и сделать колону в бд

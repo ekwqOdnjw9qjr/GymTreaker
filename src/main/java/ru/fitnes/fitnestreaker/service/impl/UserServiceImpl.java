@@ -5,20 +5,17 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.fitnes.fitnestreaker.security.CustomUserDetails;
 import ru.fitnes.fitnestreaker.dto.request.UserRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.UserResponseDto;
-import ru.fitnes.fitnestreaker.entity.enums.Role;
 import ru.fitnes.fitnestreaker.entity.User;
+import ru.fitnes.fitnestreaker.entity.enums.Role;
 import ru.fitnes.fitnestreaker.exception.ErrorType;
 import ru.fitnes.fitnestreaker.exception.LocalException;
 import ru.fitnes.fitnestreaker.mapper.UserMapper;
-import ru.fitnes.fitnestreaker.repository.UserSpecification;
 import ru.fitnes.fitnestreaker.repository.UserRepository;
+import ru.fitnes.fitnestreaker.repository.UserSpecification;
 import ru.fitnes.fitnestreaker.security.SecurityConfig;
 import ru.fitnes.fitnestreaker.service.UserService;
 
@@ -69,7 +66,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRequestDto registerNewUser(UserRequestDto userRequestDto) throws MessagingException {
+    public UserResponseDto registerNewUser(UserRequestDto userRequestDto) throws MessagingException {
         if (userRepository.checkEmailExists(userRequestDto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("User with this email is already register");
         }
@@ -81,7 +78,7 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(user);
         mailService.SendRegistrationMail(userRequestDto.getEmail(),userRequestDto.getFirstName(),userRequestDto.getLastName());
 
-        return userMapper.userRequestToDto(savedUser);
+        return userMapper.userResponseToDto(savedUser);
     }
 
     @Override
@@ -98,7 +95,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @PreAuthorize("#id == authentication.principal.id")
-    public UserRequestDto update(UserRequestDto userRequestDto, Long id) {
+    public UserResponseDto update(UserRequestDto userRequestDto, Long id) {
         User userToUpdate = userRepository.findById(id)
                 .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND, "User with id: " + id + " not found."));
 
@@ -107,7 +104,7 @@ public class UserServiceImpl implements UserService {
 
         User savedUser = userRepository.save(userToUpdate);
 
-        return userMapper.userRequestToDto(savedUser);
+        return userMapper.userResponseToDto(savedUser);
     }
 
     @Override

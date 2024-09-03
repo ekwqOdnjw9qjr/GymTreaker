@@ -8,19 +8,17 @@ import ru.fitnes.fitnestreaker.entity.enums.MembershipStatus;
 import ru.fitnes.fitnestreaker.entity.enums.MembershipType;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 public interface MembershipService {
 
      MembershipResponseDto getById(Long id);
 
-    Set<MembershipResponseDto> findYourMemberships();
+    List<MembershipResponseDto> findYourMemberships();
 
     List<MembershipResponseDto> getAll();
 
-     MembershipRequestDto create(MembershipRequestDto membershipRequestDto, MembershipType membershipType);
+     MembershipResponseDto create(MembershipRequestDto membershipRequestDto, MembershipType membershipType);
 
      MembershipStatus checkStatus(Long id);
 

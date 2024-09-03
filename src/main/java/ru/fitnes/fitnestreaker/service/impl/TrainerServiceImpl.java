@@ -3,10 +3,7 @@ package ru.fitnes.fitnestreaker.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import ru.fitnes.fitnestreaker.security.CustomUserDetails;
 import ru.fitnes.fitnestreaker.dto.request.TrainerRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.CoachingTimeResponseDto;
 import ru.fitnes.fitnestreaker.dto.response.TrainerResponseDto;
@@ -64,20 +61,20 @@ public class TrainerServiceImpl implements TrainerService {
     // переделать на спецификацию поиск по имени или по фамилии
 
     @Override
-    public TrainerRequestDto create(TrainerRequestDto trainerRequestDto) {
+    public TrainerResponseDto create(TrainerRequestDto trainerRequestDto) {
 
         Trainer trainer = trainerMapper.trainerRequestToEntity(trainerRequestDto);
         trainer.setUser(userRepository.getReferenceById(securityConfig.getCurrentUser().getId()));
 
         Trainer savedTrainer = trainerRepository.save(trainer);
 
-        return trainerMapper.trainerRequestToDto(savedTrainer);
+        return trainerMapper.trainerResponseToDto(savedTrainer);
     }
     // сделать метод чтобы тренер мог посмотреть кто на какой день к нему записан
 
     @Override
     @PreAuthorize("#id == authentication.principal.id")
-    public TrainerRequestDto update(Long id, TrainerRequestDto trainerRequestDto) {
+    public TrainerResponseDto update(Long id, TrainerRequestDto trainerRequestDto) {
         Trainer oldTrainer = trainerRepository.findById(id)
                 .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND, "Trainer with id: " + id + " not found."));
 
@@ -85,7 +82,7 @@ public class TrainerServiceImpl implements TrainerService {
 
         Trainer savedTrainer = trainerRepository.save(oldTrainer);
 
-        return trainerMapper.trainerRequestToDto(savedTrainer);
+        return trainerMapper.trainerResponseToDto(savedTrainer);
     }
 
     @PreAuthorize("#id == authentication.principal.id")

@@ -1,0 +1,15 @@
+spring:
+  mail:
+    host: smtp.yandex.ru
+    port: 587
+    username: qwerty534534
+    password: nnrtwtjypxqijtdv
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/gymdb
+    username: postgres
+    password: zxcqwe
+
+logging:
+    level:
+      root: DEBUG

@@ -1,11 +1,7 @@
 package ru.fitnes.fitnestreaker.service.impl;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import ru.fitnes.fitnestreaker.security.CustomUserDetails;
 import ru.fitnes.fitnestreaker.dto.request.CoachingTimeRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.CoachingTimeResponseDto;
 import ru.fitnes.fitnestreaker.entity.CoachingTime;
@@ -19,8 +15,6 @@ import ru.fitnes.fitnestreaker.security.SecurityConfig;
 import ru.fitnes.fitnestreaker.service.CoachingTimeService;
 
 import java.time.DayOfWeek;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +35,7 @@ public class CoachingTimeServiceImpl implements CoachingTimeService {
     }
 
     @Override
-    public CoachingTimeRequestDto create(CoachingTimeRequestDto coachingTimeRequestDto, DayOfWeek dayOfWeek) {
+    public CoachingTimeResponseDto create(CoachingTimeRequestDto coachingTimeRequestDto, DayOfWeek dayOfWeek) {
 
         CoachingTime coachingTime = coachingTimeMapper.coachingTimeRequestToEntity(coachingTimeRequestDto);
 
@@ -51,7 +45,7 @@ public class CoachingTimeServiceImpl implements CoachingTimeService {
         coachingTime.setTrainer(trainer);
         CoachingTime savedCoachingTime = coachingTimeRepository.save(coachingTime);
 
-        return coachingTimeMapper.coachingTimeRequestToDto(savedCoachingTime);
+        return coachingTimeMapper.coachingTimeResponseToDto(savedCoachingTime);
     }
 
     @Override

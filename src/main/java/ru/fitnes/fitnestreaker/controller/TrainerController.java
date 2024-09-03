@@ -17,7 +17,6 @@ import ru.fitnes.fitnestreaker.dto.response.TrainerResponseDto;
 import ru.fitnes.fitnestreaker.service.impl.TrainerServiceImpl;
 
 import java.util.List;
-import java.util.Set;
 
 
 @Validated
@@ -64,7 +63,7 @@ public class TrainerController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ROLE_TRAINER') or hasRole('ROLE_ADMIN')")
-    public ResponseWrapper<TrainerRequestDto> createTrainer(@RequestBody @Valid TrainerRequestDto trainerRequestDto) {
+    public ResponseWrapper<TrainerResponseDto> createTrainer(@RequestBody @Valid TrainerRequestDto trainerRequestDto) {
         return baseResponseService.wrapSuccessResponse(trainerServiceImpl.create(trainerRequestDto));
     }
 
@@ -74,7 +73,7 @@ public class TrainerController {
     )
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_TRAINER') or hasRole('ROLE_ADMIN')")
-    public ResponseWrapper<TrainerRequestDto> updateTrainer(@PathVariable Long id, @RequestBody TrainerRequestDto trainerRequestDto) {
+    public ResponseWrapper<TrainerResponseDto> updateTrainer(@PathVariable Long id, @RequestBody TrainerRequestDto trainerRequestDto) {
         return baseResponseService.wrapSuccessResponse(trainerServiceImpl.update(id,trainerRequestDto));
     }
 

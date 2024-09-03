@@ -76,7 +76,7 @@ public class UserController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseWrapper<UserRequestDto> registerUser(@RequestBody UserRequestDto userDto) throws Exception,MessagingException {
+    public ResponseWrapper<UserResponseDto> registerUser(@RequestBody UserRequestDto userDto) throws Exception,MessagingException {
         return baseResponseService.wrapSuccessResponse(userServiceImpl.registerNewUser(userDto));
     }
 
@@ -95,7 +95,7 @@ public class UserController {
             description = "Allows you to update user information in the database"
     )
     @PutMapping("/{id}")
-    public ResponseWrapper<UserRequestDto> updateUser(@RequestBody  UserRequestDto userRequestDto, @PathVariable Long id) {
+    public ResponseWrapper<UserResponseDto> updateUser(@RequestBody  UserRequestDto userRequestDto, @PathVariable Long id) {
         return baseResponseService.wrapSuccessResponse(userServiceImpl.update(userRequestDto,id));
     }
 

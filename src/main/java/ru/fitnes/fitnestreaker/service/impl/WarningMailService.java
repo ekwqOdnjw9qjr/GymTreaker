@@ -11,7 +11,6 @@ import ru.fitnes.fitnestreaker.repository.MembershipRepository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -22,7 +21,7 @@ public class WarningMailService {
     private final MailService mailService;
     private final MembershipRepository membershipRepository;
 
-    @Scheduled(cron = "0 */5 * * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void checkEndDate() throws MessagingException {
         log.info("Метод checkEndDate запущен");
 

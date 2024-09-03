@@ -18,9 +18,9 @@ public interface UserService {
 
      List<UserResponseDto> getAll();
 
-     UserRequestDto registerNewUser(UserRequestDto userRequestDto) throws MessagingException;
+     UserResponseDto registerNewUser(UserRequestDto userRequestDto) throws MessagingException;
 
-     UserRequestDto update(UserRequestDto dto, Long id);
+     UserResponseDto update(UserRequestDto dto, Long id);
 
      UserResponseDto changeRole(Long id, Role role);
 

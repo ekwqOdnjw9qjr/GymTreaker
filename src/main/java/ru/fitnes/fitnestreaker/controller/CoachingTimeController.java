@@ -32,7 +32,7 @@ public class CoachingTimeController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseWrapper<CoachingTimeRequestDto> create(@RequestBody
+    public ResponseWrapper<CoachingTimeResponseDto> create(@RequestBody
                                                               CoachingTimeRequestDto coachingTimeRequestDto,
                                                               DayOfWeek dayOfWeek) {
         return baseResponseService.wrapSuccessResponse(coachingTimeServiceImpl
