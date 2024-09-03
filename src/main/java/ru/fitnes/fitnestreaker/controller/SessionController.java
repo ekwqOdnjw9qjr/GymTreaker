@@ -53,16 +53,6 @@ public class SessionController {
     }
 
     @Operation(
-            summary = "Getting info about a sessions by trainer id",
-            description = "A"
-    )
-    @GetMapping("/info")
-    @PreAuthorize("hasRole('ROLE_TRAINER')")
-    public ResponseWrapper<List<SessionResponseInfo>> getInfoAboutSessionsForTrainer() {
-        return baseResponseService.wrapSuccessResponse(sessionServiceImpl.getSessions());
-    }
-
-    @Operation(
             summary = "Getting all the session",
             description = "Allows you to unload all sessions from the database"
     )

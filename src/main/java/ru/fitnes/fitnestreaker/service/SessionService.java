@@ -25,8 +25,6 @@ public interface SessionService {
 
     void changeStatus(Long id, SessionStatus status);
 
-    List<SessionResponseInfo> getSessions();
-
     void delete(Long id);
 }
 

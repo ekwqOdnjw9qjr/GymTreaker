@@ -2,7 +2,6 @@ package ru.fitnes.fitnestreaker.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ru.fitnes.fitnestreaker.dto.request.SessionRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.CoachingTimeResponseDto;
@@ -15,7 +14,10 @@ import ru.fitnes.fitnestreaker.entity.enums.SessionStatus;
 import ru.fitnes.fitnestreaker.exception.ErrorType;
 import ru.fitnes.fitnestreaker.exception.LocalException;
 import ru.fitnes.fitnestreaker.mapper.SessionMapper;
-import ru.fitnes.fitnestreaker.repository.*;
+import ru.fitnes.fitnestreaker.repository.MembershipRepository;
+import ru.fitnes.fitnestreaker.repository.SessionRepository;
+import ru.fitnes.fitnestreaker.repository.TrainerRepository;
+import ru.fitnes.fitnestreaker.repository.UserRepository;
 import ru.fitnes.fitnestreaker.security.SecurityConfig;
 import ru.fitnes.fitnestreaker.service.SessionService;
 
@@ -61,18 +63,6 @@ public class  SessionServiceImpl implements SessionService {
         List<Session> sessionList = sessionRepository.findAll();
 
         return sessionMapper.sessionResponseToListDto(sessionList);
-    }
-
-    @Override
-    public List<SessionResponseInfo> getSessions() {
-
-        Long trainerId = trainerRepository.findByUserId(securityConfig.getCurrentUser().getId());
-
-        Specification<Session> spec = Specification.where(SessionSpecification.hasStatus(SessionStatus.SCHEDULED)
-                .and(SessionSpecification.hasTrainer(trainerId)));
-        List<Session> sessionList = sessionRepository.findAll(spec);
-
-        return sessionMapper.sessionResponseInfoToDto(sessionList);
     }
 
     // нужно сделать сортировку по статусу
