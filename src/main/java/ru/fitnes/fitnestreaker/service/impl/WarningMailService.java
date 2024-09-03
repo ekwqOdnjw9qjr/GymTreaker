@@ -44,7 +44,7 @@ public class WarningMailService {
             User user = membership.getUser();
             LocalDate endDate = membership.getEndDate();
             log.info("Отправка email пользователю: " + user.getEmail());
-            mailService.SendMailIfMembershipClose(
+            mailService.sendMailIfMembershipClose(
                     user.getEmail(),
                     user.getFirstName(),
                     user.getLastName(),

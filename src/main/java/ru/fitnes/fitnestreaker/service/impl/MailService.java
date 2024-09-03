@@ -20,12 +20,12 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class MailService {
 
-    @Value("${MAIL_USERNAME}")
+    @Value("${EMAIL_NAME}")
     private String EMAIL;
-    private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
+    private final JavaMailSender mailSender;
 
-    public void SendRegistrationMail(String to, String firstName, String lastName) throws MessagingException {
+    public void sendRegistrationMail(String to, String firstName, String lastName) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
 
         Context context = new Context();
@@ -39,14 +39,14 @@ public class MailService {
                 StandardCharsets.UTF_8.name());
 
         helper.setTo(to);
-        helper.setFrom(new InternetAddress(EMAIL + "@yandex.ru"));
+        helper.setFrom(new InternetAddress(EMAIL));
         helper.setSubject("ZXC");
         helper.setText(process,true);
 
         mailSender.send(mimeMessage);
     }
 
-    public void SendMailIfMembershipClose(String to,
+    public void sendMailIfMembershipClose(String to,
                                           String firstName,
                                           String lastName,
                                           LocalDate endDate) throws MessagingException {
@@ -63,7 +63,7 @@ public class MailService {
                 StandardCharsets.UTF_8.name());
 
         helper.setTo(to);
-        helper.setFrom(new InternetAddress(EMAIL + "@yandex.ru"));
+        helper.setFrom(new InternetAddress(EMAIL));
         helper.setSubject("ZXC");
         helper.setText(process,true);
 

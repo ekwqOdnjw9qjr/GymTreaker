@@ -14,7 +14,6 @@ import ru.fitnes.fitnestreaker.dto.response.CoachingTimeResponseDto;
 import ru.fitnes.fitnestreaker.dto.response.TrainerResponseDto;
 import ru.fitnes.fitnestreaker.dto.response.session.TrainerResponse;
 import ru.fitnes.fitnestreaker.entity.Trainer;
-import ru.fitnes.fitnestreaker.service.impl.TrainerServiceImpl;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;

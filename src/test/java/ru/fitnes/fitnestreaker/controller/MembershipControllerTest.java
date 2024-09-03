@@ -15,7 +15,6 @@ import ru.fitnes.fitnestreaker.dto.response.MembershipResponseDto;
 import ru.fitnes.fitnestreaker.entity.Membership;
 import ru.fitnes.fitnestreaker.entity.enums.MembershipStatus;
 import ru.fitnes.fitnestreaker.entity.enums.MembershipType;
-import ru.fitnes.fitnestreaker.service.impl.MembershipServiceImpl;
 
 import java.time.LocalDate;
 import java.util.List;

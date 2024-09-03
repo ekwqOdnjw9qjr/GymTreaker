@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.fitnes.fitnestreaker.dto.request.UserRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.UserResponseDto;
 import ru.fitnes.fitnestreaker.entity.enums.Role;
-import ru.fitnes.fitnestreaker.service.impl.UserServiceImpl;
 
 import java.util.List;
 
