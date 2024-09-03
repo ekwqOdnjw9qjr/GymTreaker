@@ -9,7 +9,7 @@ spring:
     import: classpath:config.properties
 
   profiles:
-    active: prod
+    active: h2
 
   liquibase:
     change-log: db/changelog/db.changelog-master.xml
