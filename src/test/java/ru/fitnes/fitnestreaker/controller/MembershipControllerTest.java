@@ -44,10 +44,6 @@ public class MembershipControllerTest {
 
     private Membership membership;
 
-
-
-
-
     @BeforeEach
     public void init() {
         membership = new Membership();
