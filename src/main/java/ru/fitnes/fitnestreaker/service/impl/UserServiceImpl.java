@@ -49,10 +49,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponseDto> searchUsersByAnyFields(UserRequestDto userRequestDto) {
-        Specification<User> spec = Specification.where(UserSpecification.hasFirstName(userRequestDto.getFirstName()))
-                .or(UserSpecification.hasLastName(userRequestDto.getLastName()))
-                .or(UserSpecification.hasEmail(userRequestDto.getEmail()));
+    public List<UserResponseDto> searchUsersByAnyFields(String email, String firstName, String lastName) {
+        Specification<User> spec = Specification.where(UserSpecification.hasFirstName(firstName))
+                .or(UserSpecification.hasLastName(lastName))
+                .or(UserSpecification.hasEmail(email));
+
+        if (email != null && !email.isEmpty()) {
+            spec = spec.and(UserSpecification.hasEmail(email));
+        }
+        if (firstName != null && !firstName.isEmpty()) {
+            spec = spec.and(UserSpecification.hasFirstName(firstName));
+        }
+        if (lastName != null && !lastName.isEmpty()) {
+            spec = spec.and(UserSpecification.hasLastName(lastName));
+        }
 
         List<User> userList = userRepository.findAll(spec);
 
@@ -76,7 +86,7 @@ public class UserServiceImpl implements UserService {
         user.setRole(Role.ROLE_USER);
 
         User savedUser = userRepository.save(user);
-        mailService.SendRegistrationMail(userRequestDto.getEmail(),userRequestDto.getFirstName(),userRequestDto.getLastName());
+        mailService.sendRegistrationMail(userRequestDto.getEmail(),userRequestDto.getFirstName(),userRequestDto.getLastName());
 
         return userMapper.userResponseToDto(savedUser);
     }

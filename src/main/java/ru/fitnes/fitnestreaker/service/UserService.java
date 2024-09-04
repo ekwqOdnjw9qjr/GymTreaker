@@ -14,7 +14,7 @@ public interface UserService {
 
      UserResponseDto getUserInfo();
 
-     List<UserResponseDto> searchUsersByAnyFields(UserRequestDto userRequestDto);
+     List<UserResponseDto> searchUsersByAnyFields(String email, String firstName, String lastName);
 
      List<UserResponseDto> getAll();
 

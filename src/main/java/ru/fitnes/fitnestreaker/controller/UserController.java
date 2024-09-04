@@ -56,8 +56,11 @@ public class UserController {
     )
     @GetMapping("/parameter")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseWrapper<List<UserResponseDto>> getAllUsersByAnyAvailableParameter(UserRequestDto userRequestDto) {
-        return baseResponseService.wrapSuccessResponse(userServiceImpl.searchUsersByAnyFields(userRequestDto));
+    public ResponseWrapper<List<UserResponseDto>> getAllUsersByAnyAvailableParameter(
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "firstName", required = false) String firstName,
+            @RequestParam(value = "lastName", required = false) String lastName) {
+        return baseResponseService.wrapSuccessResponse(userServiceImpl.searchUsersByAnyFields(email,firstName,lastName));
     }
 
     @Operation(

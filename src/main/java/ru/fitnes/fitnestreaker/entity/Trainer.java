@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedBy;
 
 import java.util.ArrayList;
@@ -37,11 +35,15 @@ public class Trainer {
     @Column(name = "description")
     private String description;
 
+    @CreatedBy
+    @Column(name = "created_by")
+    private Long createdBy;
+
     @OneToMany(mappedBy = "trainer", cascade = CascadeType.REMOVE,  fetch = FetchType.LAZY)
     private List<CoachingTime> coachingTimes = new ArrayList<>();
 
-    @CreatedBy
-    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinColumn(name = "user_id",referencedColumnName = "id")
-    private User user;
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "trainer", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<User> users = new HashSet<>();
+
 }

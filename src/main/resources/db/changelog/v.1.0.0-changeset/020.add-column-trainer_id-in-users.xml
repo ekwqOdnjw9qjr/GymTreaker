@@ -4,15 +4,14 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="017.add-column-trainer_id-in-table-coaching_times" author="Roman">
-        <addColumn tableName="coaching_times">
+    <changeSet id="020.add-column-trainer_id-in-users" author="Roman">
+        <addColumn tableName="users">
             <column name="trainer_id" type="bigint">
-                <constraints nullable="false"
-                             foreignKeyName="trainer_coaching_times_fk"
-                             referencedTableName="trainers"
-                             referencedColumnNames="id" deleteCascade="true"/>
+                <constraints nullable="true"
+                     foreignKeyName="trainer_users_fk"
+                     referencedTableName="trainers"
+                     referencedColumnNames="id" deleteCascade="false"/>
             </column>
         </addColumn>
-
     </changeSet>
 </databaseChangeLog>

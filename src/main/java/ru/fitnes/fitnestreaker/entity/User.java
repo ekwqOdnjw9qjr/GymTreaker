@@ -1,7 +1,5 @@
 package ru.fitnes.fitnestreaker.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -10,7 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.fitnes.fitnestreaker.entity.enums.Role;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -51,8 +50,7 @@ public class User  {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Session> sessions = new HashSet<>();
 
-    @EqualsAndHashCode.Exclude
-    @OneToOne(mappedBy = "user",fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "trainer_id")
     private Trainer trainer;
 }

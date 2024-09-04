@@ -14,6 +14,7 @@ import ru.fitnes.fitnestreaker.baseresponse.ResponseWrapper;
 import ru.fitnes.fitnestreaker.dto.request.TrainerRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.CoachingTimeResponseDto;
 import ru.fitnes.fitnestreaker.dto.response.TrainerResponseDto;
+import ru.fitnes.fitnestreaker.dto.response.UserResponseDto;
 import ru.fitnes.fitnestreaker.service.impl.TrainerServiceImpl;
 
 import java.util.List;
@@ -75,6 +76,43 @@ public class TrainerController {
     @PreAuthorize("hasRole('ROLE_TRAINER') or hasRole('ROLE_ADMIN')")
     public ResponseWrapper<TrainerResponseDto> updateTrainer(@PathVariable Long id, @RequestBody TrainerRequestDto trainerRequestDto) {
         return baseResponseService.wrapSuccessResponse(trainerServiceImpl.update(id,trainerRequestDto));
+    }
+    @Operation(
+            summary = "Chose a main trainer",
+            description = "Allows you to chose trainer who will you train with"
+    )
+    @PatchMapping("/main/{id}")
+    public void setMainTrainer(@PathVariable Long id) {
+        trainerServiceImpl.choosingTheMainTrainer(id);
+    }
+
+    @Operation(
+            summary = "Delete a your trainer",
+            description = "Allows you to delete trainer if you don't need a trainer"
+    )
+    @PatchMapping
+    public void untieTheTrainer() {
+        trainerServiceImpl.deleteTheMainTrainer();
+    }
+
+    @Operation(
+            summary = "Kick a user in the of the students",
+            description = "Allows you to kick a user in the of the students by ID"
+    )
+    @PatchMapping("trainer/{id}/user")
+    @PreAuthorize("hasRole('ROLE_TRAINER')")
+    public void kickOutUserOfTheStudents(@PathVariable Long id) {
+        trainerServiceImpl.kickOutUserOfTheStudents(id);
+    }
+
+    @Operation(
+            summary = "Find all users who are engaged in this trainer",
+            description = "Allows find all users who are engaged in this trainer by ID"
+    )
+    @GetMapping("trainer/{id}/users")
+    @PreAuthorize("hasRole('ROLE_TRAINER') or hasRole('ROLE_ADMIN')")
+    public ResponseWrapper<List<UserResponseDto>> findAllUserByTrainer(@PathVariable Long id) {
+        return baseResponseService.wrapSuccessResponse(trainerServiceImpl.getUsersByTrainerId(id));
     }
 
     @Operation(

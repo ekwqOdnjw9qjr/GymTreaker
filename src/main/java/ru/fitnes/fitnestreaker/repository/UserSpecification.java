@@ -1,7 +1,5 @@
 package ru.fitnes.fitnestreaker.repository;
 
-import jakarta.validation.constraints.NotBlank;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
@@ -11,9 +9,9 @@ import ru.fitnes.fitnestreaker.entity.User;
 @RequiredArgsConstructor
 public class UserSpecification {
 
-    public static Specification<User> hasFirstName(@NonNull String firstName) {
+    public static Specification<User> hasFirstName(String firstName) {
     return (root, query, criteriaBuilder) -> {
-        if (firstName.isEmpty()) {
+        if (firstName == null || firstName.isEmpty()) {
             return criteriaBuilder.conjunction();
         }
         return criteriaBuilder.like(root.get("firstName"), "%" + firstName + "%");
