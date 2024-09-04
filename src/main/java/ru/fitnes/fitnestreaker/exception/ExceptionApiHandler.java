@@ -26,10 +26,14 @@ public class ExceptionApiHandler {
     }
 
     @ExceptionHandler(LocalException.class)
-    public ResponseWrapper<?> handleCurrentException(LocalException ex) {
-        if (ex.getType() == ErrorType.NOT_FOUND) {
-            log.error("Got not found exception {}, message: {}", ex.getClass(), ex.getMessage());
-            return baseResponseService.wrapErrorResponse(ex);
+    public ResponseWrapper<?> handleLocalException(LocalException ex) {
+        switch (ex.getType()) {
+            case NOT_FOUND -> log
+                    .error("Not Found Exception: {} - Message: {}",ex.getClass().getName(), ex.getMessage());
+            case CLIENT_ERROR -> log.
+                    error("Client Error Exception: {} - Message: {}", ex.getClass().getName(), ex.getMessage());
+            default -> log
+                    .error("Local Exception: {} - Message: {}", ex.getClass().getName(), ex.getMessage());
         }
         return baseResponseService.wrapErrorResponse(ex);
     }

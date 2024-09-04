@@ -18,7 +18,6 @@ public interface SessionMapper {
 
     SessionCommentRequest sessionCommentRequestToDto(Session session);
 
-
     @Mapping(source = "coachingTimeId", target = "coachingTime.id" )
     Session sessionRequestToEntity(SessionRequestDto sessionRequestDto);
 
@@ -27,4 +26,6 @@ public interface SessionMapper {
     List<SessionResponseInfo> sessionResponseInfoToDto(List<Session> session);
 
     List<SessionResponseDto> sessionResponseToListDto(List<Session> sessionList);
+
+
 }

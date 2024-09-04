@@ -15,6 +15,7 @@ import ru.fitnes.fitnestreaker.security.SecurityConfig;
 import ru.fitnes.fitnestreaker.service.CoachingTimeService;
 
 import java.time.DayOfWeek;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class CoachingTimeServiceImpl implements CoachingTimeService {
     public CoachingTimeResponseDto findById(Long id) {
         CoachingTime coachingTime = coachingTimeRepository.findById(id)
                 .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,
-                        "Coaching time with id: " + id + " not found."));
+                        String.format("Coaching time with id: %d not found.", id)));
 
         return coachingTimeMapper.coachingTimeResponseToDto(coachingTime);
     }
@@ -39,13 +40,19 @@ public class CoachingTimeServiceImpl implements CoachingTimeService {
 
         CoachingTime coachingTime = coachingTimeMapper.coachingTimeRequestToEntity(coachingTimeRequestDto);
 
-        Trainer trainer = trainerRepository.findTrainerByUserId(securityConfig.getCurrentUser().getId());
+        Trainer trainer = trainerRepository.findTrainerByCreatedBy(securityConfig.getCurrentUser().getId());
 
         coachingTime.setDayOfWeek(dayOfWeek);
         coachingTime.setTrainer(trainer);
         CoachingTime savedCoachingTime = coachingTimeRepository.save(coachingTime);
 
         return coachingTimeMapper.coachingTimeResponseToDto(savedCoachingTime);
+    }
+
+    @Override
+    public List<CoachingTimeResponseDto> findAll(Long id) {
+        List<CoachingTime> coachingList = coachingTimeRepository.findAllCoachingTimeByTrainerId(id);
+        return coachingTimeMapper.coachingTimeResponseToListDto(coachingList);
     }
 
     @Override

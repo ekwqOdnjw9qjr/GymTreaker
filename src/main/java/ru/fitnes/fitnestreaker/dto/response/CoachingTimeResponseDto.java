@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.fitnes.fitnestreaker.dto.response.session.TrainerResponse;
 
-
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
@@ -36,4 +35,6 @@ public class CoachingTimeResponseDto {
 
     @JsonProperty("trainerInfo")
     private TrainerResponse trainer;
+
+
 }

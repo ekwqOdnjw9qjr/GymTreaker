@@ -38,7 +38,8 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
     public TrainerResponseDto getById(Long id) {
         Trainer trainer = trainerRepository.findById(id)
-                .orElseThrow(()-> new LocalException(ErrorType.NOT_FOUND,"Trainer with id: " + id + " not found."));
+                .orElseThrow(()-> new LocalException(ErrorType.NOT_FOUND,
+                        String.format("Trainer with id: %d not found.", id)));
 
         return trainerMapper.trainerResponseToDto(trainer);
     }
@@ -54,7 +55,8 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
         public List<CoachingTimeResponseDto> findCoachingTimeByTrainerId(Long id) {
         Trainer trainer = trainerRepository.findById(id)
-                .orElseThrow(()-> new LocalException(ErrorType.NOT_FOUND,"Trainer with id: " + id + " not found."));
+                .orElseThrow(()-> new LocalException(ErrorType.NOT_FOUND,
+                        String.format("Trainer with id: %d not found.", id)));
 
         List<CoachingTime> coachingTimeList = trainer.getCoachingTimes();
 
@@ -77,7 +79,8 @@ public class TrainerServiceImpl implements TrainerService {
     @PreAuthorize("#id == authentication.principal.id")
     public TrainerResponseDto update(Long id, TrainerRequestDto trainerRequestDto) {
         Trainer oldTrainer = trainerRepository.findById(id)
-                .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND, "Trainer with id: " + id + " not found."));
+                .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,
+                        String.format("Trainer with id: %d not found.", id)));
 
         trainerMapper.merge(oldTrainer,trainerMapper.trainerRequestToEntity(trainerRequestDto));
 

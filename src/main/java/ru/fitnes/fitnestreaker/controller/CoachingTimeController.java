@@ -18,7 +18,7 @@ import java.time.DayOfWeek;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/coaching-times")
+@RequestMapping("api/v1/coaching-times")
 @PreAuthorize("hasRole('ROLE_TRAINER') or hasRole('ROLE_ADMIN')")
 @Tag(name = "Coaching Time", description = "Operation with CoachingTime")
 public class CoachingTimeController {
@@ -38,7 +38,10 @@ public class CoachingTimeController {
         return baseResponseService.wrapSuccessResponse(coachingTimeServiceImpl
                 .create(coachingTimeRequestDto,dayOfWeek));
     }
-
+    @Operation(
+            summary = "Get a coaching time by ID",
+            description = "Allows get a coaching time by ID"
+    )
     @GetMapping("/{id}")
     public ResponseWrapper<CoachingTimeResponseDto> getByID(@PathVariable Long id) {
         return baseResponseService.wrapSuccessResponse(coachingTimeServiceImpl.findById(id));
@@ -49,6 +52,7 @@ public class CoachingTimeController {
             description = "Allows you to delete a coaching time by ID in the database"
     )
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCoachingTime(@PathVariable Long id) {
         coachingTimeServiceImpl.delete(id);
     }

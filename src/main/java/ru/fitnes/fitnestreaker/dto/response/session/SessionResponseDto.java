@@ -20,14 +20,11 @@ public class SessionResponseDto {
     private Long id;
 
     @JsonProperty("comment")
-    private String comment;
+    private String userComment;
 
     @JsonProperty("dateOfTraining")
     private LocalDate dateOfTraining;
 
-    @JsonProperty("trainerInfo")
-    private TrainerResponse trainer;
-
-    @JsonProperty("coachingTimeInfo")
+    @JsonProperty("coachingTime")
     private CoachingTimeResponse coachingTime;
 }

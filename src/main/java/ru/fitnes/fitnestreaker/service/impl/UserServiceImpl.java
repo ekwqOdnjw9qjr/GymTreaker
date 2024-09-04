@@ -36,7 +36,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,"User with id: " + id + " not found."));
+                .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,
+                        String.format("User with id: %d not found.", id)));
+
 
         return userMapper.userResponseToDto(user);
     }
@@ -86,7 +88,9 @@ public class UserServiceImpl implements UserService {
         user.setRole(Role.ROLE_USER);
 
         User savedUser = userRepository.save(user);
-        mailService.sendRegistrationMail(userRequestDto.getEmail(),userRequestDto.getFirstName(),userRequestDto.getLastName());
+        mailService.sendRegistrationMail(userRequestDto.getEmail(),
+                                         userRequestDto.getFirstName(),
+                                         userRequestDto.getLastName());
 
         return userMapper.userResponseToDto(savedUser);
     }
@@ -94,7 +98,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto changeRole(Long id, Role role) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,"User with id: " + id + " not found."));
+                .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,
+                        String.format("User with id: %d not found.", id)));
+
 
         user.setRole(role);
 
@@ -107,7 +113,8 @@ public class UserServiceImpl implements UserService {
     @PreAuthorize("#id == authentication.principal.id")
     public UserResponseDto update(UserRequestDto userRequestDto, Long id) {
         User userToUpdate = userRepository.findById(id)
-                .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND, "User with id: " + id + " not found."));
+                .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,
+                        String.format("User with id: %d not found.",id)));
 
         userMapper.merge(userToUpdate, userMapper.userRequestToEntity(userRequestDto));
         userToUpdate.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));

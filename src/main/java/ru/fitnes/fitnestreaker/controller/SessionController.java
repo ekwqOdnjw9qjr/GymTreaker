@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.fitnes.fitnestreaker.baseresponse.BaseResponseService;
 import ru.fitnes.fitnestreaker.baseresponse.ResponseWrapper;
 import ru.fitnes.fitnestreaker.dto.request.SessionRequestDto;
+import ru.fitnes.fitnestreaker.dto.response.CoachingTimeResponseDto;
 import ru.fitnes.fitnestreaker.dto.response.session.SessionCommentRequest;
 import ru.fitnes.fitnestreaker.dto.response.session.SessionResponseDto;
-import ru.fitnes.fitnestreaker.dto.response.session.SessionResponseInfo;
 import ru.fitnes.fitnestreaker.entity.enums.SessionStatus;
 import ru.fitnes.fitnestreaker.service.impl.SessionServiceImpl;
 
@@ -61,6 +61,14 @@ public class SessionController {
     public ResponseWrapper<List<SessionResponseDto>> getAllSession() {
         return baseResponseService.wrapSuccessResponse(sessionServiceImpl.getAll());
     }
+    @Operation(
+            summary = "Getting free coaching time by date and trainer ID",
+            description = "Allows user to check free coaching time by date and trainer ID"
+    )
+    @GetMapping("/coaching-time")
+    public ResponseWrapper<List<CoachingTimeResponseDto>> AvailableSlotsInCoachingTime(LocalDate date,Long id) {
+        return baseResponseService.wrapSuccessResponse(sessionServiceImpl.getAvailableSlots(date,id));
+    }
 
     @Operation(
             summary = "Trainer can add comment for session",
@@ -90,13 +98,9 @@ public class SessionController {
     )
     @PatchMapping("/session/{id}/status")
     @PreAuthorize("hasRole('ROLE_TRAINER')")
-    public void changeSessionStatus(@PathVariable @Min(0)Long id,SessionStatus status) {
-        sessionServiceImpl.changeStatus(id,status);
-    }
-
-    @GetMapping("/date")
-    public ResponseWrapper<List<SessionResponseInfo>> findByDate(LocalDate date) {
-        return baseResponseService.wrapSuccessResponse(sessionServiceImpl.checkSessionByDate(date));
+    public void changeSessionStatus(@PathVariable @Min(0) Long id,
+                                    @RequestParam SessionStatus status) {
+        sessionServiceImpl.changeStatus(id, status);
     }
 
     @Operation(

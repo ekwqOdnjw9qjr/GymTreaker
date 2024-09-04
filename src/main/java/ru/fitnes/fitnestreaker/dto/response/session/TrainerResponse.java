@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TrainerResponse {
 
+    @JsonProperty("id")
+    private Long id;
+
     @JsonProperty("firstName")
     private String firstName;
 
