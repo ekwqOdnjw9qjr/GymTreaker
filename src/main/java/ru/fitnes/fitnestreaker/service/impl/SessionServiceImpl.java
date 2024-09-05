@@ -26,7 +26,12 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Сервис для управления тренировочными сессиями.
+ * Этот сервис предоставляет методы для создания, получения, обновления и удаления сессий.
+ * Также включает функционал для добавления комментариев тренера, изменения статуса сессии
+ * и поиска доступных для записи слотов.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -41,7 +46,13 @@ public class  SessionServiceImpl implements SessionService {
     private final CoachingTimeServiceImpl coachingTimeService;
 
 
-
+    /**
+     * Получение информацию о сессии по её идентификатору.
+     *
+     * @param id идентификатор сессии.
+     * @return информация о сессии.
+     * @throws LocalException если сессия с указанным идентификатором не найдена.
+     */
     @Override
     public SessionResponseDto getById(Long id) {
         Session session = sessionRepository.findById(id)
@@ -51,6 +62,11 @@ public class  SessionServiceImpl implements SessionService {
         return sessionMapper.sessionResponseToDto(session);
     }
 
+    /**
+     * Получение списка сессий текущего аутентифицированного пользователя.
+     *
+     * @return список с информацией о сессиях текущего пользователя.
+     */
     @Override
     public List<SessionResponseDto> getYourSessions() {
 
@@ -59,6 +75,11 @@ public class  SessionServiceImpl implements SessionService {
         return sessionMapper.sessionResponseToListDto(session);
     }
 
+    /**
+     * Получение списка всех сессий в базе данных.
+     *
+     * @return список с информацией обо всех сессиях.
+     */
     @Override
     public List<SessionResponseDto> getAll() {
         List<Session> sessionList = sessionRepository.findAll();
@@ -66,6 +87,15 @@ public class  SessionServiceImpl implements SessionService {
         return sessionMapper.sessionResponseToListDto(sessionList);
     }
 
+    /**
+     * Создание новой сессии для аутентифицированного в данный момент пользователя.
+     *
+     * @param sessionRequestDto объект для создания новой сессии, содержащий необходимые для ввода данные.
+     * @return информация о созданной сессии.
+     * @throws IllegalArgumentException если у пользователя нет активного абонемента,
+     *                                   если пользователь не связан с тренером,
+     *                                   если дата и время сессии конфликтуют с уже существующими сессиями.
+     */
     @Override
     public SessionResponseDto create(SessionRequestDto sessionRequestDto) {
 
@@ -114,6 +144,13 @@ public class  SessionServiceImpl implements SessionService {
         return sessionMapper.sessionResponseToDto(savedSession);
     }
 
+    /**
+     * Получение доступных для записи слотов, для тренировки в заданную пользователем дату.
+     *
+     * @param date дата для поиска доступных слотов.
+     * @param id идентификатор тренера, для которого ищутся слоты.
+     * @return список с доступными слотами для тренировки.
+     */
     @Override
     public List<CoachingTimeResponseDto> getAvailableSlots(LocalDate date, Long id) {
 
@@ -155,6 +192,15 @@ public class  SessionServiceImpl implements SessionService {
         return availableSlots;
     }
 
+    /**
+     * Добавление комментария тренера к сессии.
+     *
+     * @param id идентификатор сессии, к которой будет добавлен комментарий.
+     * @param sessionCommentRequest объект, содержащий комментарий тренера.
+     * @return информация о сессии с добавленным комментарием тренера.
+     * @throws LocalException если сессия с указанным идентификатором не найдена,
+     *                        текущий пользователь не имеет доступа для изменения комментария.
+     */
     @Override
     public SessionCommentRequest addTrainerCommentForSessions(Long id,SessionCommentRequest sessionCommentRequest) {
         Session session = sessionRepository.findById(id)
@@ -173,6 +219,15 @@ public class  SessionServiceImpl implements SessionService {
         return sessionMapper.sessionCommentRequestToDto(savedSession);
     }
 
+    /**
+     * Изменение статуса сессии.
+     *
+     * @param id идентификатор сессии.
+     * @param status новый статус сессии.
+     * @throws LocalException если сессия с указанным идентификатором не найдена,
+     *                        текущий пользователь не имеет доступа для изменения статуса,
+     *                        статус сессии уже завершен или отменен.
+     */
     @Override
     public void changeStatus(Long id, SessionStatus status) {
         Session session = sessionRepository.findById(id)
@@ -191,7 +246,11 @@ public class  SessionServiceImpl implements SessionService {
             Session savedSession = sessionRepository.save(session);
             sessionMapper.sessionResponseToDto(savedSession);
     }
-
+    /**
+     * Удаление сессию по её идентификатору.
+     *
+     * @param id идентификатор сессии.
+     */
     @Override
     public void delete(Long id) {
         sessionRepository.deleteById(id);

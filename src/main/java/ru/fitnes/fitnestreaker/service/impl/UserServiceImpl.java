@@ -20,7 +20,11 @@ import ru.fitnes.fitnestreaker.security.SecurityConfig;
 import ru.fitnes.fitnestreaker.service.UserService;
 
 import java.util.List;
-
+/**
+ * Сервис для управления пользователями.
+ * Этот сервис предоставляет методы для регистрации, обновления, удаления пользователей,
+ * а также для поиска и получения информации о пользователях.
+ */
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -31,8 +35,13 @@ public class UserServiceImpl implements UserService {
     private final SecurityConfig securityConfig;
     private final PasswordEncoder passwordEncoder;
 
-
-
+    /**
+     * Получение информации о пользователе по его идентификатору.
+     *
+     * @param id идентификатор пользователя.
+     * @return информация о пользователе.
+     * @throws LocalException если пользователь с указанным идентификатором не найден.
+     */
     @Override
     public UserResponseDto getById(Long id) {
         User user = userRepository.findById(id)
@@ -43,6 +52,11 @@ public class UserServiceImpl implements UserService {
         return userMapper.userResponseToDto(user);
     }
 
+    /**
+     * Получение информацию о текущем пользователе.
+     *
+     * @return информация о текущем пользователе.
+     */
     @Override
     public UserResponseDto getUserInfo() {
         User user = userRepository.findUserById(securityConfig.getCurrentUser().getId());
@@ -50,6 +64,14 @@ public class UserServiceImpl implements UserService {
         return userMapper.userResponseToDto(user);
     }
 
+    /**
+     * Поиск пользователей по любому из указанных полей (email, firstName, lastName).
+     *
+     * @param email электронная почта пользователя.
+     * @param firstName имя пользователя.
+     * @param lastName фамилия пользователя.
+     * @return список пользователей соответствующих критериям поиска.
+     */
     @Override
     public List<UserResponseDto> searchUsersByAnyFields(String email, String firstName, String lastName) {
         Specification<User> spec = Specification.where(UserSpecification.hasFirstName(firstName))
@@ -71,12 +93,24 @@ public class UserServiceImpl implements UserService {
         return userMapper.userResponseToListDto(userList);
     }
 
+    /**
+     * Получение списка всех пользователей.
+     *
+     * @return список с информацией обо всех пользователях.
+     */
     @Override
     public List<UserResponseDto> getAll() {
         List<User> userList = userRepository.findAll();
         return userMapper.userResponseToListDto(userList);
     }
 
+    /**
+     * Регистрация нового пользователя.
+     *
+     * @param userRequestDto объект для регистрации нового пользователя, содержащий необходимые для регистрации данные.
+     * @return информация о зарегистрированном пользователе.
+     * @throws MessagingException если произошла ошибка при отправке письма.
+     */
     @Override
     public UserResponseDto registerNewUser(UserRequestDto userRequestDto) throws MessagingException {
         if (userRepository.checkEmailExists(userRequestDto.getEmail()).isPresent()) {
@@ -95,12 +129,19 @@ public class UserServiceImpl implements UserService {
         return userMapper.userResponseToDto(savedUser);
     }
 
+    /**
+     * Изменение роли пользователя.
+     *
+     * @param id идентификатор пользователя.
+     * @param role новая роль пользователя.
+     * @return информация о пользователе с обновленной ролью.
+     * @throws LocalException если пользователь с указанным идентификатором не найден.
+     */
     @Override
     public UserResponseDto changeRole(Long id, Role role) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,
                         String.format("User with id: %d not found.", id)));
-
 
         user.setRole(role);
 
@@ -109,6 +150,14 @@ public class UserServiceImpl implements UserService {
         return userMapper.userResponseToDto(savedUser);
     }
 
+    /**
+     * Обновление информации о пользователе.
+     *
+     * @param userRequestDto объект, содержащий обновленные данные пользователя.
+     * @param id идентификатор пользователя.
+     * @return  информация об обновленном пользователе.
+     * @throws LocalException если пользователь с указанным идентификатором не найден.
+     */
     @Override
     @PreAuthorize("#id == authentication.principal.id")
     public UserResponseDto update(UserRequestDto userRequestDto, Long id) {
@@ -124,6 +173,13 @@ public class UserServiceImpl implements UserService {
         return userMapper.userResponseToDto(savedUser);
     }
 
+    /**
+     * Удаление пользователя по его идентификатору и выход из приложения.
+     *
+     * @param id идентификатор пользователя.
+     * @param session текущая HTTP сессия.
+     * @throws LocalException если пользователь с указанным идентификатором не найден.
+     */
     @Override
     @PreAuthorize("#id == authentication.principal.id")
     public void delete(Long id, HttpSession session) {
@@ -132,11 +188,15 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    /**
+     * Выход из приложения.
+     *
+     * @param session текущая HTTP сессия.
+     */
     public void logout(HttpSession session) {
         if (session != null) {
             session.invalidate();
         }
 
     }
-
 }

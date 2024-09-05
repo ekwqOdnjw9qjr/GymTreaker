@@ -15,6 +15,9 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
+/**
+ * Сервис для отправки электронных писем.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -25,6 +28,14 @@ public class MailService {
     private final SpringTemplateEngine templateEngine;
     private final JavaMailSender mailSender;
 
+    /**
+     * Отправление электронного письма пользователю после регистрации.
+     *
+     * @param to Адрес электронной почты получателя.
+     * @param firstName Имя получателя.
+     * @param lastName  Фамилия получателя.
+     * @throws MessagingException если произошла ошибка при создании или отправке письма.
+     */
     public void sendRegistrationMail(String to, String firstName, String lastName) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
 
@@ -46,6 +57,15 @@ public class MailService {
         mailSender.send(mimeMessage);
     }
 
+    /**
+     * Отправление электронного письма пользователю с предупреждением о скором окончании абонемента.
+     *
+     * @param to Адрес электронной почты получателя.
+     * @param firstName Имя получателя.
+     * @param lastName  Фамилия получателя.
+     * @param endDate   Дата окончания абонемента.
+     * @throws MessagingException если произошла ошибка при создании или отправке письма.
+     */
     public void sendMailIfMembershipClose(String to,
                                           String firstName,
                                           String lastName,

@@ -20,6 +20,11 @@ import ru.fitnes.fitnestreaker.service.MembershipService;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Сервис для управления абонементами.
+ * Этот сервис предоставляет методы для создания, получения, обновления и удаления абонементов.
+ * Также включает функционал для замораживания абонементов и проверки их статуса.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -31,16 +36,28 @@ public class MembershipServiceImpl implements MembershipService {
     private final MembershipRepository membershipRepository;
 
 
+    /**
+     * Получить абонемент по идентификатору.
+     *
+     * @param id идентификатор абонемента.
+     * @return информация об абонементе.
+     * @throws LocalException если абонемент с указанным идентификатором не найден.
+     */
     @Override
     public MembershipResponseDto getById(Long id) {
         Membership membership = membershipRepository.findById(id)
-                .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND, "Membership with id: " + id + " not found"));
+                .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,
+                        String.format("Membership with id: %d not found.", id)));
+
         return membershipMapper.membershipResponseToDto(membership);
     }
-
+    /**
+     * Получение информации об абонементах аутентифицированного в данный момент пользователя.
+     *
+     * @return информация об абонементах аутентифицированного в данный момент пользователя.
+     */
     @Override
     public List<MembershipResponseDto> findYourMemberships() {
-
 
         List<Membership> membershipSet = membershipRepository
                 .findMembershipsByUserId(securityConfig.getCurrentUser().getId());
@@ -48,12 +65,24 @@ public class MembershipServiceImpl implements MembershipService {
         return membershipMapper.membershipResponseToListDto(membershipSet);
     }
 
+    /**
+     * Получение информации о всех абонементах в базе данных.
+     *
+     * @return информация о всех абонементах в базе данных.
+     */
     @Override
     public List<MembershipResponseDto> getAll() {
         List<Membership> membershipList = membershipRepository.findAll();
         return membershipMapper.membershipResponseToListDto(membershipList);
     }
 
+    /**
+     * Создает новый абонемент для аутентифицированного в данный момент пользователя.
+     *
+     * @param membershipRequestDto объект для создания нового абонемента.
+     * @param membershipType тип абонемента.
+     * @return сохраненный абонемент.
+     */
     @Override
     public MembershipResponseDto create(MembershipRequestDto membershipRequestDto,MembershipType membershipType) {
 
@@ -70,6 +99,21 @@ public class MembershipServiceImpl implements MembershipService {
         return membershipMapper.membershipResponseToDto(savedMembership);
     }
 
+    // если у пользователя есть один абонимент, то второму нужно присвоить startDate = null, так как пользователь потом
+    // должен выбрать след дату когда абонимент будет активен
+    // сделать метод чтобы активировать этот абонимент
+
+    /**
+     * Замораживает абонемент пользователя на указанное количество дней.
+     *
+     * @param id идентификатор абонемента.
+     * @param freezeDays количество дней, на которое абонемент должен быть заморожен.
+     * @return абонемент пользователя с обновленной информацией об абонементе после заморозки.
+     * @throws LocalException если:
+     *     Число дней заморозки отрицательное,
+     *     абонемент с указанным идентификатором не найден,
+     *     у пользователя недостаточно доступных дней для заморозки.
+     */
     @Override
     @PreAuthorize("#id == authentication.principal.id")
     public MembershipResponseDto freezeMembership(Long id, Long freezeDays) {
@@ -78,7 +122,9 @@ public class MembershipServiceImpl implements MembershipService {
         }
 
         Membership membership = membershipRepository.findById(id)
-                .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND, "Membership with id: " + id + " not found"));
+                .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,
+                        String.format("Membership with id: %d not found.", id)));
+
         Long availableFreezeDays = membership.getFreezingDays();
 
         log.info("Available freeze days: " + availableFreezeDays);
@@ -99,10 +145,20 @@ public class MembershipServiceImpl implements MembershipService {
         return membershipMapper.membershipResponseToDto(savedMembership);
     }
 
+    /**
+     * Проверяет текущий статус абонемента по его идентификатору.
+     *
+     * @param id идентификатор абонемента.
+     * @return статус абонемента ACTIVE или INACTIVE.
+     * @throws LocalException если:
+     *     Абонемент с указанным идентификатором не найден,
+     *     текущий пользователь не имеет доступа к данному абонементу.
+     */
     @Override
     public MembershipStatus checkStatus(Long id) {
         Membership membership = membershipRepository.findById(id)
-                .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND, "Membership with id: " + id + " not found"));
+                .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,
+                        String.format("Membership with id: %d not found.", id)));
 
         if (!membership.getUser().getId().equals(securityConfig.getCurrentUser().getId())) {
             throw new LocalException(ErrorType.CLIENT_ERROR,
@@ -119,14 +175,24 @@ public class MembershipServiceImpl implements MembershipService {
             return MembershipStatus.ACTIVE;
         }
     }
-    // добавить поле статус в сущность memberships и удалить этот метод
+
+    /**
+     * Удалить абонемент по идентификатору.
+     *
+     * @param id идентификатор абонемента.
+     */
     @Override
     public void delete(Long id) {
         membershipRepository.deleteById(id);
     }
 
-    @Override
-    public LocalDate calculateEndDate(Membership membership) {
+    /**
+     * Вычисляет дату окончания абонемента на основе типа абонемента и даты начала.
+     *
+     * @param membership объект, который содержит информацию об абонементе.
+     * @return дата окончания абонемента.
+     */
+    private LocalDate calculateEndDate(Membership membership) {
         MembershipType membershipType = null;
         switch (membership.getMembershipType()) {
             case SMALL -> membershipType = MembershipType.SMALL;

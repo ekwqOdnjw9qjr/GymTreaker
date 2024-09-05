@@ -11,7 +11,11 @@ import ru.fitnes.fitnestreaker.repository.MembershipRepository;
 
 import java.time.LocalDate;
 import java.util.List;
-
+/**
+ * Сервис для отправки предупреждений пользователям о приближающемся окончании срока действия их членства.
+ * Сервис проверяет, у каких пользователей истекает абонемент в ближайшие 10 дней,
+ * и отправляет им уведомления.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -21,6 +25,12 @@ public class WarningMailService {
     private final MailService mailService;
     private final MembershipRepository membershipRepository;
 
+    /**
+     * Метод, запускаемый по расписанию для проверки абонементов, которые истекают через 10 дней.
+     * Отправляет пользователям уведомления по электронной почте.
+     *
+     * @throws MessagingException если произошла ошибка при отправке письма.
+     */
     @Scheduled(cron = "0 0 0 * * *")
     public void checkEndDate() throws MessagingException {
         log.info("Метод checkEndDate запущен");

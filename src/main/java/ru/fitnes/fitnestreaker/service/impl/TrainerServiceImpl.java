@@ -23,6 +23,10 @@ import ru.fitnes.fitnestreaker.service.TrainerService;
 
 import java.util.List;
 
+/**
+ * Сервис для управления тренерами.
+ * Этот сервис предоставляет методы для создания, получения, обновления и удаления тренеров.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -35,6 +39,13 @@ public class TrainerServiceImpl implements TrainerService {
     private final TrainerRepository trainerRepository;
     private final CoachingTimeMapper coachingTimeMapper;
 
+    /**
+     * Получение информации о тренере по его идентификатору.
+     *
+     * @param id идентификатор тренера.
+     * @return информация о тренере.
+     * @throws LocalException если тренер с указанным идентификатором не найден.
+     */
     @Override
     public TrainerResponseDto getById(Long id) {
         Trainer trainer = trainerRepository.findById(id)
@@ -44,6 +55,11 @@ public class TrainerServiceImpl implements TrainerService {
         return trainerMapper.trainerResponseToDto(trainer);
     }
 
+    /**
+     * Получение списка всех тренеров.
+     *
+     * @return список с информацией обо всех тренерах.
+     */
     @Override
     public List<TrainerResponseDto> getAll() {
         List<Trainer> trainerList = trainerRepository.findAll();
@@ -52,6 +68,13 @@ public class TrainerServiceImpl implements TrainerService {
 
     }
 
+    /**
+     * Получение расписания тренера по его идентификатору.
+     *
+     * @param id идентификатор тренера.
+     * @return список с информацией о расписании тренера.
+     * @throws LocalException если тренер с указанным идентификатором не найден.
+     */
     @Override
         public List<CoachingTimeResponseDto> findCoachingTimeByTrainerId(Long id) {
         Trainer trainer = trainerRepository.findById(id)
@@ -64,6 +87,12 @@ public class TrainerServiceImpl implements TrainerService {
 
     }
 
+    /**
+     * Создание информации о тренере.
+     *
+     * @param trainerRequestDto объект для создания нового тренера, содержащий необходимые для создания данные.
+     * @return информация о созданном тренере.
+     */
     @Override
     public TrainerResponseDto create(TrainerRequestDto trainerRequestDto) {
 
@@ -75,6 +104,14 @@ public class TrainerServiceImpl implements TrainerService {
         return trainerMapper.trainerResponseToDto(savedTrainer);
     }
 
+    /**
+     * Обновление информации о тренере по идентификатору.
+     *
+     * @param id идентификатор тренера.
+     * @param trainerRequestDto объект, содержащий обновленные данные тренера.
+     * @return информация об обновленном тренере.
+     * @throws LocalException если тренер с указанным идентификатором не найден.
+     */
     @Override
     @PreAuthorize("#id == authentication.principal.id")
     public TrainerResponseDto update(Long id, TrainerRequestDto trainerRequestDto) {
@@ -88,7 +125,12 @@ public class TrainerServiceImpl implements TrainerService {
 
         return trainerMapper.trainerResponseToDto(savedTrainer);
     }
-
+    /**
+     * Назначение указанного тренера в качестве основного для текущего пользователя.
+     *
+     * @param id идентификатор тренера, который будет назначен основным для текущего пользователя.
+     * @throws LocalException если тренер или текущий пользователь не найдены.
+     */
     @Override
     public void choosingTheMainTrainer(Long id) {
         Trainer trainer = trainerRepository.findById(id)
@@ -104,6 +146,13 @@ public class TrainerServiceImpl implements TrainerService {
         userRepository.save(user);
     }
 
+    /**
+     * Удаление пользователя из списка студентов пользователя.
+     *
+     * @param id идентификатор пользователя, у которого удаляется тренер.
+     * @throws LocalException если пользователь с указанным идентификатором не найден,
+     *                        или текущий пользователь не имеет доступа для удаления тренера.
+     */
     @Override
     public void kickOutUserOfTheStudents(Long id) {
 
@@ -119,9 +168,13 @@ public class TrainerServiceImpl implements TrainerService {
         user.setTrainer(null);
 
         userRepository.save(user);
-
     }
 
+    /**
+     * Удаление текущего основного тренера у пользователя.
+     *
+     * @throws LocalException если текущий пользователь не найден.
+     */
     @Override
     public void deleteTheMainTrainer() {
         User user = userRepository.findById(securityConfig.getCurrentUser().getId())
@@ -133,6 +186,12 @@ public class TrainerServiceImpl implements TrainerService {
         userRepository.save(user);
     }
 
+    /**
+     * Получение списка пользователей, которые занимаются у тренера.
+     *
+     * @param id идентификатор тренера.
+     * @return список пользователей, которые занимаются с указанным тренером.
+     */
     @Override
     @PreAuthorize("#id == authentication.principal.id")
     public List<UserResponseDto> getUsersByTrainerId(Long id) {
@@ -141,7 +200,11 @@ public class TrainerServiceImpl implements TrainerService {
 
         return userMapper.userResponseToListDto(userList);
     }
-
+    /**
+     * Удаление тренера по его идентификатору.
+     *
+     * @param id идентификатор тренера.
+     */
     @PreAuthorize("#id == authentication.principal.id")
     @Override
     public void delete(Long id) {
