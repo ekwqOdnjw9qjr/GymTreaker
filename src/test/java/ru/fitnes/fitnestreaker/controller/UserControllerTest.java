@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.fitnes.fitnestreaker.dto.request.UserRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.UserResponseDto;
 import ru.fitnes.fitnestreaker.entity.enums.Role;
+import ru.fitnes.fitnestreaker.service.impl.UserServiceImpl;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-public class UserControllerTest {
+class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -38,7 +39,7 @@ public class UserControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    public void testUserRegister() throws Exception {
+    void testUserRegister() throws Exception {
 
         UserRequestDto userRequestDto = UserRequestDto.builder()
                 .email("zxcqwe@gmail.com")
@@ -69,7 +70,7 @@ public class UserControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void testGetAllUser() throws Exception {
+    void testGetAllUser() throws Exception {
 
         UserResponseDto userResponseDto1 = UserResponseDto.builder()
                 .id(1L)
@@ -105,7 +106,7 @@ public class UserControllerTest {
     }
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void testGetUserById() throws Exception {
+    void testGetUserById() throws Exception {
         Long userId = 1L;
         UserResponseDto userResponseDto = UserResponseDto.builder()
                 .id(userId)
@@ -126,7 +127,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testGetUserInfo() throws Exception {
+    void testGetUserInfo() throws Exception {
         Long userId = 1L;
         UserResponseDto userResponseDto = UserResponseDto.builder()
                 .id(userId)
@@ -148,7 +149,7 @@ public class UserControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void testGetAllUsersByAnyAvailableParameter() throws Exception {
+    void testGetAllUsersByAnyAvailableParameter() throws Exception {
         String lastName = "Freak";
 
 
@@ -190,7 +191,7 @@ public class UserControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void testChangeUserRole() throws Exception {
+    void testChangeUserRole() throws Exception {
 
         Long userId = 1L;
 
@@ -215,7 +216,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testUpdateUser() throws Exception {
+    void testUpdateUser() throws Exception {
 
         Long userId = 1L;
 
@@ -247,8 +248,8 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testDeleteUserById() throws Exception {
-        Long userId = 1L;
+    void testDeleteUserById() throws Exception {
+        Long userId = 2L;
 
         mockMvc.perform(delete("/api/v1/users/{id}", userId)
                         .contentType(MediaType.APPLICATION_JSON))

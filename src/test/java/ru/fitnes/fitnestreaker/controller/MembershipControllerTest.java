@@ -15,6 +15,7 @@ import ru.fitnes.fitnestreaker.dto.response.MembershipResponseDto;
 import ru.fitnes.fitnestreaker.entity.Membership;
 import ru.fitnes.fitnestreaker.entity.enums.MembershipStatus;
 import ru.fitnes.fitnestreaker.entity.enums.MembershipType;
+import ru.fitnes.fitnestreaker.service.impl.MembershipServiceImpl;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -30,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-public class MembershipControllerTest {
+class MembershipControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -55,7 +56,7 @@ public class MembershipControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void getMembershipByIdTest() throws Exception {
+    void getMembershipByIdTest() throws Exception {
 
         Long membershipId = 1L;
 
@@ -69,7 +70,7 @@ public class MembershipControllerTest {
 
         given(membershipServiceImpl.getById(membershipId)).willReturn(membershipResponse);
 
-        mockMvc.perform(get("/memberships/{id}",membershipId)
+        mockMvc.perform(get("/api/v1/memberships/{id}",membershipId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
@@ -80,7 +81,7 @@ public class MembershipControllerTest {
 
 
     @Test
-    public void testCheckMembershipStatus() throws Exception {
+    void testCheckMembershipStatus() throws Exception {
         Long membershipId = membership.getId();
 
         MembershipStatus membershipStatus = MembershipStatus.ACTIVE;
@@ -89,7 +90,7 @@ public class MembershipControllerTest {
         given(membershipServiceImpl.checkStatus(membershipId)).willReturn(membershipStatus);
 
 
-        mockMvc.perform(get("/memberships/membership/{id}/status", membershipId)
+        mockMvc.perform(get("/api/v1/memberships/membership/{id}/status", membershipId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
@@ -97,7 +98,7 @@ public class MembershipControllerTest {
     }
 
     @Test
-    public void testFreezeMembership() throws Exception {
+    void testFreezeMembership() throws Exception {
         Long membershipId = 1L;
         Long freezeDays = 5L;
 
@@ -111,7 +112,7 @@ public class MembershipControllerTest {
 
         given(membershipServiceImpl.freezeMembership(membershipId,freezeDays)).willReturn(membershipResponse);
 
-        mockMvc.perform(patch("/memberships/membership/{id}/frost",membershipId)
+        mockMvc.perform(patch("/api/v1/memberships/membership/{id}/frost",membershipId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true));
@@ -119,7 +120,7 @@ public class MembershipControllerTest {
 
 
     @Test
-    public void testCreateMembership() throws Exception {
+    void testCreateMembership() throws Exception {
 
 
         MembershipRequestDto membershipRequest = MembershipRequestDto.builder()
@@ -137,7 +138,7 @@ public class MembershipControllerTest {
 
         given(membershipServiceImpl.create(membershipRequest, MembershipType.SMALL)).willReturn(membershipResponse);
 
-        mockMvc.perform(post("/memberships")
+        mockMvc.perform(post("/api/v1/memberships")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(membershipRequest))
                         .param("membershipType", MembershipType.SMALL.name()))
@@ -150,7 +151,7 @@ public class MembershipControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void testGetAllMembership() throws Exception {
+    void testGetAllMembership() throws Exception {
 
         MembershipResponseDto membership1 = MembershipResponseDto.builder()
                 .id(1L)
@@ -172,7 +173,7 @@ public class MembershipControllerTest {
 
         given(membershipServiceImpl.getAll()).willReturn(membershipResponseDtoList);
 
-        mockMvc.perform(get("/memberships")
+        mockMvc.perform(get("/api/v1/memberships")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
@@ -191,20 +192,20 @@ public class MembershipControllerTest {
     }
 
     @Test
-    public void testGetAllYourMembership() throws Exception {
+    void testGetAllYourMembership() throws Exception {
 
         MembershipResponseDto membership1 = MembershipResponseDto.builder()
                 .id(1L)
-                .startDate(LocalDate.of(2024, 8, 30))
-                .endDate(LocalDate.of(2024, 10, 29))
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now().plusDays(30))
                 .membershipType(MembershipType.SMALL)
                 .freezingDays(10L)
                 .build();
 
         MembershipResponseDto membership2 = MembershipResponseDto.builder()
                 .id(2L)
-                .startDate(LocalDate.of(2024, 8, 30))
-                .endDate(LocalDate.of(2024, 10, 29))
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now().plusDays(30))
                 .membershipType(MembershipType.SMALL)
                 .freezingDays(10L)
                 .build();
@@ -213,7 +214,7 @@ public class MembershipControllerTest {
 
         given(membershipServiceImpl.findYourMemberships()).willReturn(membershipResponseDtoList);
 
-        mockMvc.perform(get("/memberships/my-memberships")
+        mockMvc.perform(get("/api/v1/memberships/my-memberships")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
@@ -233,11 +234,11 @@ public class MembershipControllerTest {
     }
 
     @Test
-    public void testDeleteMembershipById() throws Exception {
+    void testDeleteMembershipById() throws Exception {
 
         Long membershipId = 1L;
 
-        mockMvc.perform(delete("/memberships/{id}",membershipId))
+        mockMvc.perform(delete("/api/v1/memberships/{id}",membershipId))
                 .andExpect(status().isNoContent());
 
         verify(membershipServiceImpl, times(1)).delete(1L);

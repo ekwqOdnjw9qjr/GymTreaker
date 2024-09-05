@@ -10,17 +10,19 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.fitnes.fitnestreaker.dto.request.SessionRequestDto;
+import ru.fitnes.fitnestreaker.dto.response.CoachingTimeResponseDto;
 import ru.fitnes.fitnestreaker.dto.response.session.CoachingTimeResponse;
 import ru.fitnes.fitnestreaker.dto.response.session.SessionCommentRequest;
 import ru.fitnes.fitnestreaker.dto.response.session.SessionResponseDto;
 import ru.fitnes.fitnestreaker.dto.response.session.TrainerResponse;
 import ru.fitnes.fitnestreaker.entity.enums.SessionStatus;
+import ru.fitnes.fitnestreaker.service.impl.SessionServiceImpl;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -31,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-public class SessionControllerTest {
+class SessionControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -44,7 +46,7 @@ public class SessionControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void testGetSessionById() throws Exception {
+    void testGetSessionById() throws Exception {
 
         Long sessionId = 1L;
 
@@ -73,7 +75,7 @@ public class SessionControllerTest {
     }
 
     @Test
-    public void testGetYourSessions() throws Exception {
+    void testGetYourSessions() throws Exception {
 
         CoachingTimeResponse coachingTimeResponse1 = CoachingTimeResponse.builder()
                 .startOfTraining(LocalTime.of(8,10))
@@ -116,7 +118,7 @@ public class SessionControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void testGetAllSession() throws Exception {
+    void testGetAllSession() throws Exception {
         CoachingTimeResponse coachingTimeResponse1 = CoachingTimeResponse.builder()
                 .startOfTraining(LocalTime.of(8,10))
                 .endOfTraining(LocalTime.of(10,10))
@@ -158,7 +160,7 @@ public class SessionControllerTest {
 
     @Test
     @WithMockUser(roles = "TRAINER")
-    public void testAddTrainerCommentForSessions() throws Exception {
+    void testAddTrainerCommentForSessions() throws Exception {
 
         Long sessionId = 1L;
 
@@ -177,17 +179,12 @@ public class SessionControllerTest {
     }
 
     @Test
-    public void testCreateSession() throws Exception {
+    void testCreateSession() throws Exception {
 
         SessionRequestDto sessionRequestDto = SessionRequestDto.builder()
                 .coachingTimeId(1L)
                 .dateOfTraining(LocalDate.now())
                 .userComment("zxc")
-                .build();
-
-        TrainerResponse trainerResponse = TrainerResponse.builder()
-                .firstName("Zxcqwe")
-                .lastName("Qwezxc")
                 .build();
 
         CoachingTimeResponse coachingTimeResponse = CoachingTimeResponse.builder()
@@ -198,7 +195,6 @@ public class SessionControllerTest {
         SessionResponseDto sessionResponseDto = SessionResponseDto.builder()
                 .id(1L)
                 .dateOfTraining(LocalDate.now())
-                .trainer(trainerResponse)
                 .coachingTime(coachingTimeResponse)
                 .userComment("zxc")
                 .build();
@@ -218,7 +214,7 @@ public class SessionControllerTest {
 
     @Test
     @WithMockUser(roles = "TRAINER")
-    public void testChangeSessionStatus() throws Exception {
+    void testChangeSessionStatus() throws Exception {
 
         Long sessionId = 1L;
         SessionStatus newStatus = SessionStatus.COMPLETED;
@@ -231,9 +227,55 @@ public class SessionControllerTest {
                 .andDo(print());
     }
 
+   @Test
+   void testGetAvailableSlotInCoachingTime() throws Exception {
+      LocalDate date = LocalDate.of(2024, 9, 20);
+      Long trainerId = 1L;
+
+      TrainerResponse trainerResponse = TrainerResponse.builder()
+              .id(trainerId)
+              .firstName("Zqwweerw")
+              .lastName("Dfdasdf")
+              .build();
+
+      CoachingTimeResponseDto coachingTimeResponseDto1 = CoachingTimeResponseDto.builder()
+              .id(1L)
+              .dayOfWeek(DayOfWeek.FRIDAY)
+              .startOfTraining(LocalTime.of(7, 10))
+              .endOfTraining(LocalTime.of(9, 10))
+              .trainer(trainerResponse)
+              .build();
+
+      CoachingTimeResponseDto coachingTimeResponseDto2 = CoachingTimeResponseDto.builder()
+              .id(2L)
+              .dayOfWeek(DayOfWeek.FRIDAY)
+              .startOfTraining(LocalTime.of(11, 10))
+              .endOfTraining(LocalTime.of(13, 10))
+              .trainer(trainerResponse)
+              .build();
+
+      List<CoachingTimeResponseDto> coachingTimeResponseDtoList = List.of(coachingTimeResponseDto1, coachingTimeResponseDto2);
+
+      given(sessionService.getAvailableSlots(date, trainerId)).willReturn(coachingTimeResponseDtoList);
+
+      mockMvc.perform(get("/api/v1/sessions/coaching-time")
+                      .param("date", date.toString())
+                      .param("id", trainerId.toString())
+                      .contentType(MediaType.APPLICATION_JSON))
+              .andExpect(status().isOk())
+              .andExpect(jsonPath("$.success").value(true))
+              .andExpect(jsonPath("$.body").isArray())
+              .andExpect(jsonPath("$.body.length()").value(coachingTimeResponseDtoList.size()))
+              .andExpect(jsonPath("$.body[0].id").value(coachingTimeResponseDto1.getId()))
+              .andExpect(jsonPath("$.body[1].id").value(coachingTimeResponseDto2.getId()))
+              .andDo(print());
+   }
+
+
+
     @Test
     @WithMockUser(roles = "TRAINER")
-    public void testDeleteSessionById() throws Exception {
+    void testDeleteSessionById() throws Exception {
         Long sessionId = 1L;
 
         mockMvc.perform(delete("/api/v1/sessions/{id}", sessionId)
@@ -241,6 +283,6 @@ public class SessionControllerTest {
                 .andExpect(status().isNoContent())
                 .andDo(print());
 
-        verify(sessionService, times(1)).delete(eq(sessionId));
+        verify(sessionService, times(1)).delete((sessionId));
     }
 }

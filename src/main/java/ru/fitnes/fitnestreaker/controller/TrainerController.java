@@ -35,7 +35,7 @@ public class TrainerController {
             description = "Allows you to upload a trainer by ID from the database"
     )
     @GetMapping("/{id}")
-    public ResponseWrapper<TrainerResponseDto> getTrainerById(@PathVariable @Min(0) Long id) {
+    public ResponseWrapper<TrainerResponseDto> getTrainerById(@PathVariable @Min(1) Long id) {
         return baseResponseService.wrapSuccessResponse(trainerServiceImpl.getById(id));
     }
 
@@ -44,7 +44,7 @@ public class TrainerController {
             description = "Allows you to check a trainer schedule by trainer ID from the database"
     )
     @GetMapping("/trainer/{id}/schedule")
-    public ResponseWrapper<List<CoachingTimeResponseDto>> getScheduleTrainerByTrainerId(@PathVariable @Min(0) Long id){
+    public ResponseWrapper<List<CoachingTimeResponseDto>> getScheduleTrainerByTrainerId(@PathVariable @Min(1) Long id){
         return baseResponseService.wrapSuccessResponse(trainerServiceImpl.findCoachingTimeByTrainerId(id));
     }
 
@@ -74,7 +74,8 @@ public class TrainerController {
     )
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_TRAINER') or hasRole('ROLE_ADMIN')")
-    public ResponseWrapper<TrainerResponseDto> updateTrainer(@PathVariable Long id, @RequestBody TrainerRequestDto trainerRequestDto) {
+    public ResponseWrapper<TrainerResponseDto> updateTrainer(@PathVariable @Min(1) Long id
+            ,@RequestBody TrainerRequestDto trainerRequestDto) {
         return baseResponseService.wrapSuccessResponse(trainerServiceImpl.update(id,trainerRequestDto));
     }
     @Operation(
@@ -101,7 +102,7 @@ public class TrainerController {
     )
     @PatchMapping("trainer/{id}/user")
     @PreAuthorize("hasRole('ROLE_TRAINER')")
-    public void kickOutUserOfTheStudents(@PathVariable Long id) {
+    public void kickOutUserOfTheStudents(@PathVariable @Min(1) Long id) {
         trainerServiceImpl.kickOutUserOfTheStudents(id);
     }
 
@@ -111,7 +112,7 @@ public class TrainerController {
     )
     @GetMapping("trainer/{id}/users")
     @PreAuthorize("hasRole('ROLE_TRAINER') or hasRole('ROLE_ADMIN')")
-    public ResponseWrapper<List<UserResponseDto>> findAllUserByTrainer(@PathVariable Long id) {
+    public ResponseWrapper<List<UserResponseDto>> findAllUserByTrainer(@PathVariable @Min(1) Long id) {
         return baseResponseService.wrapSuccessResponse(trainerServiceImpl.getUsersByTrainerId(id));
     }
 
@@ -122,7 +123,7 @@ public class TrainerController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ROLE_TRAINER') or hasRole('ROLE_ADMIN')")
-    public void deleteTrainer(@PathVariable @Min(0) Long id) {
+    public void deleteTrainer(@PathVariable @Min(1) Long id) {
         trainerServiceImpl.delete(id);
     }
 }

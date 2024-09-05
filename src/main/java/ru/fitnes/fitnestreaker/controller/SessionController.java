@@ -39,7 +39,7 @@ public class SessionController {
     )
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_TRAINER') or hasRole('ROLE_ADMIN')")
-    public ResponseWrapper<SessionResponseDto> getSessionById(@PathVariable @Min(0) Long id) {
+    public ResponseWrapper<SessionResponseDto> getSessionById(@PathVariable @Min(1) Long id) {
         return baseResponseService.wrapSuccessResponse(sessionServiceImpl.getById(id));
     }
 
@@ -66,7 +66,7 @@ public class SessionController {
             description = "Allows user to check free coaching time by date and trainer ID"
     )
     @GetMapping("/coaching-time")
-    public ResponseWrapper<List<CoachingTimeResponseDto>> AvailableSlotsInCoachingTime(LocalDate date,Long id) {
+    public ResponseWrapper<List<CoachingTimeResponseDto>> availableSlotsInCoachingTime(LocalDate date,@Min(1) Long id) {
         return baseResponseService.wrapSuccessResponse(sessionServiceImpl.getAvailableSlots(date,id));
     }
 
@@ -76,7 +76,7 @@ public class SessionController {
     )
     @PatchMapping("/trainer-comment")
     @PreAuthorize("hasRole('ROLE_TRAINER')")
-    public ResponseWrapper<SessionCommentRequest> addTrainerCommentForSessions(Long id
+    public ResponseWrapper<SessionCommentRequest> addTrainerCommentForSessions(@Min(1) Long id
             ,SessionCommentRequest sessionCommentRequest) {
         return baseResponseService.wrapSuccessResponse(sessionServiceImpl.addTrainerCommentForSessions(id
                 ,sessionCommentRequest));
@@ -98,7 +98,7 @@ public class SessionController {
     )
     @PatchMapping("/session/{id}/status")
     @PreAuthorize("hasRole('ROLE_TRAINER')")
-    public void changeSessionStatus(@PathVariable @Min(0) Long id,
+    public void changeSessionStatus(@PathVariable @Min(1) Long id,
                                     @RequestParam SessionStatus status) {
         sessionServiceImpl.changeStatus(id, status);
     }
@@ -110,7 +110,7 @@ public class SessionController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ROLE_TRAINER') or hasRole('ROLE_ADMIN')")
-    public void deleteSession(@PathVariable @Min(0) Long id) {
+    public void deleteSession(@PathVariable @Min(1) Long id) {
         sessionServiceImpl.delete(id);
     }
 }

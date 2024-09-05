@@ -2,6 +2,7 @@ package ru.fitnes.fitnestreaker.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,7 +44,7 @@ public class CoachingTimeController {
             description = "Allows get a coaching time by ID"
     )
     @GetMapping("/{id}")
-    public ResponseWrapper<CoachingTimeResponseDto> getByID(@PathVariable Long id) {
+    public ResponseWrapper<CoachingTimeResponseDto> getByID(@PathVariable @Min(1) Long id) {
         return baseResponseService.wrapSuccessResponse(coachingTimeServiceImpl.findById(id));
     }
 
@@ -53,7 +54,7 @@ public class CoachingTimeController {
     )
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCoachingTime(@PathVariable Long id) {
+    public void deleteCoachingTime(@PathVariable @Min(1) Long id) {
         coachingTimeServiceImpl.delete(id);
     }
 }

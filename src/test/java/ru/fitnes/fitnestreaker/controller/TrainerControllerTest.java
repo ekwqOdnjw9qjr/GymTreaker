@@ -12,14 +12,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.fitnes.fitnestreaker.dto.request.TrainerRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.CoachingTimeResponseDto;
 import ru.fitnes.fitnestreaker.dto.response.TrainerResponseDto;
+import ru.fitnes.fitnestreaker.dto.response.UserResponseDto;
 import ru.fitnes.fitnestreaker.dto.response.session.TrainerResponse;
 import ru.fitnes.fitnestreaker.entity.Trainer;
+import ru.fitnes.fitnestreaker.service.impl.TrainerServiceImpl;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -30,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-public class TrainerControllerTest {
+class TrainerControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -42,7 +43,7 @@ public class TrainerControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    public void testGetTrainerById() throws Exception {
+    void testGetTrainerById() throws Exception {
 
         Long trainerId = 1L;
 
@@ -67,7 +68,7 @@ public class TrainerControllerTest {
     }
 
     @Test
-    public void testGetScheduleTrainerByTrainerId() throws Exception {
+    void testGetScheduleTrainerByTrainerId() throws Exception {
         Long trainerId = 1L;
 
         Trainer trainer = new Trainer();
@@ -115,7 +116,7 @@ public class TrainerControllerTest {
     }
 
     @Test
-    public void testGetAllTrainer() throws Exception {
+    void testGetAllTrainer() throws Exception {
 
         TrainerResponseDto trainerResponseDto1 = TrainerResponseDto.builder()
                 .id(1L)
@@ -154,7 +155,7 @@ public class TrainerControllerTest {
 
     @Test
     @WithMockUser(roles = "TRAINER")
-    public void testCreateTrainer() throws Exception {
+    void testCreateTrainer() throws Exception {
 
         TrainerRequestDto trainerRequestDto = TrainerRequestDto.builder()
                 .firstName("Zxcvbn")
@@ -186,7 +187,7 @@ public class TrainerControllerTest {
 
     @Test
     @WithMockUser(roles = "TRAINER")
-    public void testUpdateTrainer() throws Exception {
+    void testUpdateTrainer() throws Exception {
 
         Long trainerId = 1L;
 
@@ -219,8 +220,69 @@ public class TrainerControllerTest {
     }
 
     @Test
+    void testSetMainTrainer() throws Exception {
+        Long trainerId = 1L;
+
+
+
+        mockMvc.perform(patch("/api/v1/trainers/main/{id}", trainerId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        verify(trainerService, times(1)).choosingTheMainTrainer(trainerId);
+    }
+
+    @Test
+    void testUntieTheTrainer() throws Exception {
+
+        mockMvc.perform(patch("/api/v1/trainers")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        verify(trainerService, times(1)).deleteTheMainTrainer();
+    }
+
+    @Test
     @WithMockUser(roles = "TRAINER")
-    public void testDeleteTrainerById() throws Exception {
+    void testFindAllUserByTrainer() throws Exception {
+        Long trainerId = 1L;
+
+        UserResponseDto userResponseDto1 = UserResponseDto.builder()
+                .id(1L)
+                .email("zxc@gmail.com")
+                .firstName("Alex")
+                .lastName("Freak")
+                .build();
+
+        UserResponseDto userResponseDto2 = UserResponseDto.builder()
+                .id(2L)
+                .email("qwe@gmail.com")
+                .firstName("Joe")
+                .lastName("Freak")
+                .build();
+
+        List<UserResponseDto> userResponseDtoList = List.of(userResponseDto1,userResponseDto2);
+
+        given(trainerService.getUsersByTrainerId(trainerId)).willReturn(userResponseDtoList);
+
+        mockMvc.perform(get("/api/v1/trainers/trainer/{id}/users", trainerId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.body").isArray())
+                .andExpect(jsonPath("$.body.length()").value(userResponseDtoList.size()))
+                .andExpect(jsonPath("$.body[0].id").value(userResponseDto1.getId()))
+                .andExpect(jsonPath("$.body[1].id").value(userResponseDto2.getId()))
+                .andDo(print());
+
+        verify(trainerService, times(1)).getUsersByTrainerId(trainerId);
+    }
+
+    @Test
+    @WithMockUser(roles = "TRAINER")
+    void testDeleteTrainerById() throws Exception {
         Long trainerId = 1L;
 
         mockMvc.perform(delete("/api/v1/trainers/{id}", trainerId)
@@ -228,7 +290,6 @@ public class TrainerControllerTest {
                 .andExpect(status().isNoContent())
                 .andDo(print());
 
-        verify(trainerService, times(1)).delete(eq(trainerId));
+        verify(trainerService, times(1)).delete((trainerId));
     }
-
 }

@@ -11,11 +11,11 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.fitnes.fitnestreaker.dto.request.CoachingTimeRequestDto;
 import ru.fitnes.fitnestreaker.dto.response.CoachingTimeResponseDto;
+import ru.fitnes.fitnestreaker.service.impl.CoachingTimeServiceImpl;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-public class CoachingTimeControllerTest {
+class CoachingTimeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -39,7 +39,7 @@ public class CoachingTimeControllerTest {
 
     @Test
     @WithMockUser(roles = "TRAINER")
-    public void testCreateCoachingTime() throws Exception {
+    void testCreateCoachingTime() throws Exception {
 
         CoachingTimeRequestDto coachingTimeRequestDto = CoachingTimeRequestDto.builder()
                 .startOfTraining(LocalTime.of(7,10))
@@ -71,7 +71,7 @@ public class CoachingTimeControllerTest {
 
     @Test
     @WithMockUser(roles = "TRAINER")
-    public void testGetCoachingTimesById() throws Exception {
+    void testGetCoachingTimesById() throws Exception {
 
         Long coachingTimeId = 1L;
 
@@ -96,7 +96,7 @@ public class CoachingTimeControllerTest {
 
     @Test
     @WithMockUser(roles = "TRAINER")
-    public void testDeleteCoachingTimeById() throws Exception {
+    void testDeleteCoachingTimeById() throws Exception {
 
         Long coachingTimeId = 1L;
 
@@ -105,7 +105,7 @@ public class CoachingTimeControllerTest {
                 .andExpect(status().isNoContent())
                 .andDo(print());
 
-        verify(coachingTimeService, times(1)).delete(eq(coachingTimeId));
+        verify(coachingTimeService, times(1)).delete((coachingTimeId));
     }
 
 

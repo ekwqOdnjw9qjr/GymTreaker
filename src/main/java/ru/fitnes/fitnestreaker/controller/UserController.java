@@ -2,7 +2,6 @@ package ru.fitnes.fitnestreaker.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +36,7 @@ public class UserController {
     )
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseWrapper<UserResponseDto> getUserById(@PathVariable @Min(0) Long id) {
+    public ResponseWrapper<UserResponseDto> getUserById(@PathVariable @Min(1) Long id) {
         return baseResponseService.wrapSuccessResponse(userServiceImpl.getById(id));
     }
 
@@ -79,7 +78,7 @@ public class UserController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseWrapper<UserResponseDto> registerUser(@RequestBody UserRequestDto userDto) throws Exception,MessagingException {
+    public ResponseWrapper<UserResponseDto> registerUser(@RequestBody UserRequestDto userDto) throws Exception{
         return baseResponseService.wrapSuccessResponse(userServiceImpl.registerNewUser(userDto));
     }
 
@@ -89,7 +88,7 @@ public class UserController {
     )
     @PatchMapping("/user/{id}/role")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseWrapper<UserResponseDto> changeUserRole(@PathVariable @Min(0) Long id, Role role) {
+    public ResponseWrapper<UserResponseDto> changeUserRole(@PathVariable @Min(1) Long id, Role role) {
         return baseResponseService.wrapSuccessResponse(userServiceImpl.changeRole(id,role));
     }
 
@@ -98,7 +97,8 @@ public class UserController {
             description = "Allows you to update user information in the database"
     )
     @PutMapping("/{id}")
-    public ResponseWrapper<UserResponseDto> updateUser(@RequestBody  UserRequestDto userRequestDto, @PathVariable Long id) {
+    public ResponseWrapper<UserResponseDto> updateUser(@RequestBody  UserRequestDto userRequestDto,
+                                                       @PathVariable @Min(1) Long id) {
         return baseResponseService.wrapSuccessResponse(userServiceImpl.update(userRequestDto,id));
     }
 
@@ -108,10 +108,13 @@ public class UserController {
     )
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable @Min(0) Long id,HttpSession session) {
+    public void deleteUser(@PathVariable @Min(1) Long id,HttpSession session) {
         userServiceImpl.delete(id,session);
     }
 
+    @Operation(
+            summary = "Logout"
+    )
     @PostMapping("/logout")
     public void logout(HttpSession httpSession) {
         userServiceImpl.logout(httpSession);

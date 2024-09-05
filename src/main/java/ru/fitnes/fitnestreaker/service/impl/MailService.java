@@ -23,7 +23,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class MailService {
 
-    @Value("${EMAIL_NAME}")
+    @Value("${MAIL_USERNAME}")
     private String EMAIL;
     private final SpringTemplateEngine templateEngine;
     private final JavaMailSender mailSender;

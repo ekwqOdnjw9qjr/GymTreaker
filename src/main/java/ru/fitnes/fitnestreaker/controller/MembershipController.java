@@ -21,7 +21,7 @@ import java.util.List;
 
 @Validated
 @RestController
-@RequestMapping("/memberships")
+@RequestMapping("api/v1/memberships")
 @RequiredArgsConstructor
 @Tag(name = "Memberships",description = "Operation on memberships")
 public class MembershipController {
@@ -36,7 +36,7 @@ public class MembershipController {
     )
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseWrapper<MembershipResponseDto> getMembershipById(@PathVariable @Min(0) Long id) {
+    public ResponseWrapper<MembershipResponseDto> getMembershipById(@PathVariable @Min(1) Long id) {
         return baseResponseService.wrapSuccessResponse(membershipServiceImpl.getById(id));
     }
 
@@ -64,7 +64,7 @@ public class MembershipController {
             description = "Allows you to check status of your membership by by membership ID from the database"
     )
     @GetMapping("/membership/{id}/status")
-    public ResponseWrapper<MembershipStatus> checkMembershipStatus(@PathVariable @Min(0) Long id) {
+    public ResponseWrapper<MembershipStatus> checkMembershipStatus(@PathVariable @Min(1) Long id) {
         return baseResponseService.wrapSuccessResponse(membershipServiceImpl.checkStatus(id));
     }
 
@@ -85,7 +85,7 @@ public class MembershipController {
             description = "Adds a certain number of days specified in the membership type to your subscription end date"
     )
     @PatchMapping("/membership/{id}/frost")
-    public ResponseWrapper<MembershipResponseDto> freezeMembership(@PathVariable Long id, Long freezeDays) {
+    public ResponseWrapper<MembershipResponseDto> freezeMembership(@PathVariable @Min(1) Long id, Long freezeDays) {
         return baseResponseService.wrapSuccessResponse(membershipServiceImpl.freezeMembership(id, freezeDays));
     }
 
@@ -95,7 +95,7 @@ public class MembershipController {
     )
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMembership(@PathVariable @Min(0) Long id) {
+    public void deleteMembership(@PathVariable @Min(1) Long id) {
         membershipServiceImpl.delete(id);
     }
 }
