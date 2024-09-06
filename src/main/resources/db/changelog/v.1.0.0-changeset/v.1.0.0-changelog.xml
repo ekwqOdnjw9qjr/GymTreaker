@@ -11,6 +11,7 @@
     <include file="003.insert-user-with-admin-role.xml" relativeToChangelogFile="true"/>
     <include file="002.create-memberships-table.xml" relativeToChangelogFile="true"/>
     <include file="016.change-columns-types-in-table-memberships.xml" relativeToChangelogFile="true"/>
+    <include file="021.change-constraint-in-columns-in-memberships.xml" relativeToChangelogFile="true"/>
     <include file="004.create-trainer-table.xml" relativeToChangelogFile="true"/>
     <include file="020.add-column-trainer_id-in-users.xml" relativeToChangelogFile="true"/>
     <include file="019.add-column-created_by-in-trainers.xml" relativeToChangelogFile="true"/>

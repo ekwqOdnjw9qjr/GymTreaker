@@ -18,6 +18,7 @@ public interface MembershipService {
 
      MembershipResponseDto create(MembershipRequestDto membershipRequestDto, MembershipType membershipType);
 
+     MembershipResponseDto activeMembership(Long id, MembershipRequestDto membershipRequestDto);
      MembershipStatus checkStatus(Long id);
 
      void delete(Long id);

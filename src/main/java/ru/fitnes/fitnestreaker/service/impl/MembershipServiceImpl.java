@@ -30,6 +30,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MembershipServiceImpl implements MembershipService {
 
+    private final UserServiceImpl userService;
     private final SecurityConfig securityConfig;
     private final UserRepository userRepository;
     private final MembershipMapper membershipMapper;
@@ -59,10 +60,10 @@ public class MembershipServiceImpl implements MembershipService {
     @Override
     public List<MembershipResponseDto> findYourMemberships() {
 
-        List<Membership> membershipSet = membershipRepository
+            List<Membership> membershipList = membershipRepository
                 .findMembershipsByUserId(securityConfig.getCurrentUser().getId());
 
-        return membershipMapper.membershipResponseToListDto(membershipSet);
+        return membershipMapper.membershipResponseToListDto(membershipList);
     }
 
     /**
@@ -78,6 +79,8 @@ public class MembershipServiceImpl implements MembershipService {
 
     /**
      * Создает новый абонемент для аутентифицированного в данный момент пользователя.
+     * Если пользователь уже имеет активный абонемент, то новый абонемент создается без даты старта и окончания
+     * абонемента, чтобы указать дату старта (активировать абонемент) пользователь может воспользоваться методом activeMembership.
      *
      * @param membershipRequestDto объект для создания нового абонемента.
      * @param membershipType тип абонемента.
@@ -86,22 +89,61 @@ public class MembershipServiceImpl implements MembershipService {
     @Override
     public MembershipResponseDto create(MembershipRequestDto membershipRequestDto,MembershipType membershipType) {
 
-
         Membership membership = membershipMapper.membershipRequestToEntity(membershipRequestDto);
+
         membership.setUser(userRepository.getReferenceById(securityConfig.getCurrentUser().getId()));
         membership.setMembershipType(membershipType);
+        membership.setFreezingDays(membershipType.getFreezeDays());
 
         LocalDate endDate = calculateEndDate(membership);
         membership.setEndDate(endDate);
+
+        List<Membership> membershipList = membershipRepository
+                .findMembershipsByUserId(securityConfig.getCurrentUser().getId());
+
+        if (!membershipList.isEmpty()) {
+            membership.setStartDate(null);
+            membership.setEndDate(null);
+        }
 
         Membership savedMembership = membershipRepository.save(membership);
 
         return membershipMapper.membershipResponseToDto(savedMembership);
     }
 
-    // если у пользователя есть один абонимент, то второму нужно присвоить startDate = null, так как пользователь потом
-    // должен выбрать след дату когда абонимент будет активен
-    // сделать метод чтобы активировать этот абонимент
+
+    /**
+     * Активация абонемента
+     *
+     * @param id идентификатор абонемента.
+     * @param membershipRequestDto объект содержащий данные для активации абонемента.
+     * @return сохраненный абонемент.
+     */
+    @Override
+    @PreAuthorize("#id == authentication.principal.id")
+    public MembershipResponseDto activeMembership(Long id, MembershipRequestDto membershipRequestDto) {
+
+        Membership membership = membershipRepository.findById(id)
+                .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,
+                        String.format("Membership with id: %d not found.", id)));
+
+        if(membership.getStartDate() == null && membership.getEndDate() == null) {
+            LocalDate startDate = membershipRequestDto.getStartDate();
+            if (startDate == null) {
+                throw new IllegalArgumentException("Start date must not be null");
+            }
+            membership.setStartDate(membershipRequestDto.getStartDate());
+            LocalDate endDate = calculateEndDate(membership);
+            membership.setEndDate(endDate);
+        } else {
+            throw new LocalException(ErrorType.CLIENT_ERROR, "Your membership is already active");
+        }
+        Membership savedMembership = membershipRepository.save(membership);
+
+        return membershipMapper.membershipResponseToDto(savedMembership);
+    }
+
+
 
     /**
      * Замораживает абонемент пользователя на указанное количество дней.
@@ -166,10 +208,9 @@ public class MembershipServiceImpl implements MembershipService {
         }
 
         LocalDate membershipEndDate = membership.getEndDate();
-
         LocalDate localDateNow = LocalDate.now();
 
-        if (localDateNow.isAfter(membershipEndDate)) {
+        if (membershipEndDate == null || localDateNow.isAfter(membershipEndDate)) {
             return MembershipStatus.INACTIVE;
         } else {
             return MembershipStatus.ACTIVE;
@@ -205,7 +246,6 @@ public class MembershipServiceImpl implements MembershipService {
                 return null;
             }
         }
-        membership.setFreezingDays(membershipType.getFreezeDays());
         return membership.getStartDate().plusDays(membershipType.getDuration());
     }
 }
