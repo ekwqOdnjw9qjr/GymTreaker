@@ -52,6 +52,7 @@ public class MembershipServiceImpl implements MembershipService {
 
         return membershipMapper.membershipResponseToDto(membership);
     }
+
     /**
      * Получение информации об абонементах аутентифицированного в данный момент пользователя.
      *
@@ -95,18 +96,26 @@ public class MembershipServiceImpl implements MembershipService {
         membership.setMembershipType(membershipType);
         membership.setFreezingDays(membershipType.getFreezeDays());
 
-        LocalDate endDate = calculateEndDate(membership);
-        membership.setEndDate(endDate);
-
         List<Membership> membershipList = membershipRepository
                 .findMembershipsByUserId(securityConfig.getCurrentUser().getId());
 
         if (!membershipList.isEmpty()) {
+
             membership.setStartDate(null);
             membership.setEndDate(null);
+
+        } else {
+
+            if (membershipRequestDto.getStartDate() == null) {
+                throw new IllegalArgumentException("Start date must not be null");
+            }
+            membership.setStartDate(membershipRequestDto.getStartDate());
+            LocalDate endDate = calculateEndDate(membership);
+            membership.setEndDate(endDate);
         }
 
         Membership savedMembership = membershipRepository.save(membership);
+
 
         return membershipMapper.membershipResponseToDto(savedMembership);
     }
@@ -127,23 +136,26 @@ public class MembershipServiceImpl implements MembershipService {
                 .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,
                         String.format("Membership with id: %d not found.", id)));
 
-        if(membership.getStartDate() == null && membership.getEndDate() == null) {
+        if (membership.getStartDate() == null && membership.getEndDate() == null) {
+
             LocalDate startDate = membershipRequestDto.getStartDate();
+
             if (startDate == null) {
                 throw new IllegalArgumentException("Start date must not be null");
             }
+
             membership.setStartDate(membershipRequestDto.getStartDate());
             LocalDate endDate = calculateEndDate(membership);
             membership.setEndDate(endDate);
+
         } else {
             throw new LocalException(ErrorType.CLIENT_ERROR, "Your membership is already active");
         }
+
         Membership savedMembership = membershipRepository.save(membership);
 
         return membershipMapper.membershipResponseToDto(savedMembership);
     }
-
-
 
     /**
      * Замораживает абонемент пользователя на указанное количество дней.
@@ -159,6 +171,7 @@ public class MembershipServiceImpl implements MembershipService {
     @Override
     @PreAuthorize("#id == authentication.principal.id")
     public MembershipResponseDto freezeMembership(Long id, Long freezeDays) {
+
         if (freezeDays < 0) {
             throw new LocalException(ErrorType.CLIENT_ERROR, "The number of freeze days cannot be negative");
         }
@@ -198,13 +211,14 @@ public class MembershipServiceImpl implements MembershipService {
      */
     @Override
     public MembershipStatus checkStatus(Long id) {
+
         Membership membership = membershipRepository.findById(id)
                 .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,
                         String.format("Membership with id: %d not found.", id)));
 
         if (!membership.getUser().getId().equals(securityConfig.getCurrentUser().getId())) {
             throw new LocalException(ErrorType.CLIENT_ERROR,
-                    "You do not have access to change the status of this session.");
+                    "You do not have access to check the status of this membership.");
         }
 
         LocalDate membershipEndDate = membership.getEndDate();
