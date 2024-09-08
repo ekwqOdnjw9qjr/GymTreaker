@@ -116,18 +116,19 @@ public class  SessionServiceImpl implements SessionService {
         CoachingTimeResponseDto coachingTime = coachingTimeService.findById(sessionRequestDto.getCoachingTimeId());
         DayOfWeek dayOfTraining = sessionRequestDto.getDateOfTraining().getDayOfWeek();
 
-        if (coachingTime.getTrainer() == null || coachingTime.getTrainer().getId() == null) {
+        if (user.getTrainer() == null) {
             throw new IllegalArgumentException("User is not linked to any trainer.");
         }
 
         if (!coachingTime.getTrainer().getId().equals(user.getTrainer().getId())) {
-            throw new IllegalArgumentException("User not linked to this trainer.");
+            throw new IllegalArgumentException("User not linked to this trainer");
         }
 
         if (!coachingTime.getDayOfWeek().equals(dayOfTraining)) {
             throw new IllegalArgumentException("The day of the week in Coaching Time does not coincide with " +
                     "the day of the week in the training date.");
         }
+
         List<Session> conflictingSessions = sessionRepository.findConflictingSessions(
                 sessionRequestDto.getCoachingTimeId(),
                 sessionRequestDto.getDateOfTraining(),
@@ -136,6 +137,7 @@ public class  SessionServiceImpl implements SessionService {
         if (!conflictingSessions.isEmpty()) {
             throw new IllegalArgumentException("Session already exists for this trainer, time, and date.");
         }
+
         Session session = sessionMapper.sessionRequestToEntity(sessionRequestDto);
         session.setStatus(SessionStatus.SCHEDULED);
         session.setUser(userRepository.getReferenceById(securityConfig.getCurrentUser().getId()));
