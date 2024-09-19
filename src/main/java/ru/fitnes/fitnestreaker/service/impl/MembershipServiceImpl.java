@@ -20,30 +20,18 @@ import ru.fitnes.fitnestreaker.service.MembershipService;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * Сервис для управления абонементами.
- * Этот сервис предоставляет методы для создания, получения, обновления и удаления абонементов.
- * Также включает функционал для замораживания абонементов и проверки их статуса.
- */
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class MembershipServiceImpl implements MembershipService {
 
-    private final UserServiceImpl userService;
     private final SecurityConfig securityConfig;
     private final UserRepository userRepository;
     private final MembershipMapper membershipMapper;
     private final MembershipRepository membershipRepository;
 
 
-    /**
-     * Получить абонемент по идентификатору.
-     *
-     * @param id идентификатор абонемента.
-     * @return информация об абонементе.
-     * @throws LocalException если абонемент с указанным идентификатором не найден.
-     */
     @Override
     public MembershipResponseDto getById(Long id) {
         Membership membership = membershipRepository.findById(id)
@@ -53,11 +41,6 @@ public class MembershipServiceImpl implements MembershipService {
         return membershipMapper.membershipResponseToDto(membership);
     }
 
-    /**
-     * Получение информации об абонементах аутентифицированного в данный момент пользователя.
-     *
-     * @return информация об абонементах аутентифицированного в данный момент пользователя.
-     */
     @Override
     public List<MembershipResponseDto> findYourMemberships() {
 
@@ -67,26 +50,12 @@ public class MembershipServiceImpl implements MembershipService {
         return membershipMapper.membershipResponseToListDto(membershipList);
     }
 
-    /**
-     * Получение информации о всех абонементах в базе данных.
-     *
-     * @return информация о всех абонементах в базе данных.
-     */
     @Override
     public List<MembershipResponseDto> getAll() {
         List<Membership> membershipList = membershipRepository.findAll();
         return membershipMapper.membershipResponseToListDto(membershipList);
     }
 
-    /**
-     * Создает новый абонемент для аутентифицированного в данный момент пользователя.
-     * Если пользователь уже имеет активный абонемент, то новый абонемент создается без даты старта и окончания
-     * абонемента, чтобы указать дату старта (активировать абонемент) пользователь может воспользоваться методом activeMembership.
-     *
-     * @param membershipRequestDto объект для создания нового абонемента.
-     * @param membershipType тип абонемента.
-     * @return сохраненный абонемент.
-     */
     @Override
     public MembershipResponseDto create(MembershipRequestDto membershipRequestDto,MembershipType membershipType) {
 
@@ -120,14 +89,6 @@ public class MembershipServiceImpl implements MembershipService {
         return membershipMapper.membershipResponseToDto(savedMembership);
     }
 
-
-    /**
-     * Активация абонемента
-     *
-     * @param id идентификатор абонемента.
-     * @param membershipRequestDto объект содержащий данные для активации абонемента.
-     * @return сохраненный абонемент.
-     */
     @Override
     @PreAuthorize("#id == authentication.principal.id")
     public MembershipResponseDto activeMembership(Long id, MembershipRequestDto membershipRequestDto) {
@@ -157,17 +118,6 @@ public class MembershipServiceImpl implements MembershipService {
         return membershipMapper.membershipResponseToDto(savedMembership);
     }
 
-    /**
-     * Замораживает абонемент пользователя на указанное количество дней.
-     *
-     * @param id идентификатор абонемента.
-     * @param freezeDays количество дней, на которое абонемент должен быть заморожен.
-     * @return абонемент пользователя с обновленной информацией об абонементе после заморозки.
-     * @throws LocalException если:
-     *     Число дней заморозки отрицательное,
-     *     абонемент с указанным идентификатором не найден,
-     *     у пользователя недостаточно доступных дней для заморозки.
-     */
     @Override
     @PreAuthorize("#id == authentication.principal.id")
     public MembershipResponseDto freezeMembership(Long id, Long freezeDays) {
@@ -200,15 +150,6 @@ public class MembershipServiceImpl implements MembershipService {
         return membershipMapper.membershipResponseToDto(savedMembership);
     }
 
-    /**
-     * Проверяет текущий статус абонемента по его идентификатору.
-     *
-     * @param id идентификатор абонемента.
-     * @return статус абонемента ACTIVE или INACTIVE.
-     * @throws LocalException если:
-     *     Абонемент с указанным идентификатором не найден,
-     *     текущий пользователь не имеет доступа к данному абонементу.
-     */
     @Override
     public MembershipStatus checkStatus(Long id) {
 
@@ -231,11 +172,6 @@ public class MembershipServiceImpl implements MembershipService {
         }
     }
 
-    /**
-     * Удалить абонемент по идентификатору.
-     *
-     * @param id идентификатор абонемента.
-     */
     @Override
     public void delete(Long id) {
         membershipRepository.deleteById(id);

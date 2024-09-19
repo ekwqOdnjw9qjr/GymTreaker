@@ -16,12 +16,7 @@ import ru.fitnes.fitnestreaker.service.CoachingTimeService;
 
 import java.time.DayOfWeek;
 import java.util.List;
-/**
- * Сервис для управления расписанием тренера.
- *
- * Предоставляет методы для создания, получения, удаления записей в расписании,
- * а также для получения всех записей по идентификатору тренера.
- */
+
 @Service
 @RequiredArgsConstructor
 public class CoachingTimeServiceImpl implements CoachingTimeService {
@@ -31,14 +26,6 @@ public class CoachingTimeServiceImpl implements CoachingTimeService {
     private final CoachingTimeMapper coachingTimeMapper;
     private final CoachingTimeRepository coachingTimeRepository;
 
-
-    /**
-     * Получить запись в расписании по идентификатору.
-     *
-     * @param id идентификатор записи в расписании тренера.
-     * @return запись в расписании тренера.
-     * @throws LocalException если запись в расписании тренера с указанным идентификатором не найдена.
-     */
     @Override
     public CoachingTimeResponseDto findById(Long id) {
         CoachingTime coachingTime = coachingTimeRepository.findById(id)
@@ -48,13 +35,6 @@ public class CoachingTimeServiceImpl implements CoachingTimeService {
         return coachingTimeMapper.coachingTimeResponseToDto(coachingTime);
     }
 
-    /**
-     * Создает новую запись в расписании тренера на указанный день недели.
-     *
-     * @param coachingTimeRequestDto объект для создания новой записи в расписания тренера.
-     * @param dayOfWeek день недели, на который будет назначено запись в расписании тренера.
-     * @return сохраненная запись в расписании тренера.
-     */
     @Override
     public CoachingTimeResponseDto create(CoachingTimeRequestDto coachingTimeRequestDto, DayOfWeek dayOfWeek) {
 
@@ -69,23 +49,12 @@ public class CoachingTimeServiceImpl implements CoachingTimeService {
         return coachingTimeMapper.coachingTimeResponseToDto(savedCoachingTime);
     }
 
-    /**
-     * Получить все расписание тренера по идентификатору тренера.
-     *
-     * @param id идентификатор тренера.
-     * @return все записи в расписании тренера.
-     */
     @Override
     public List<CoachingTimeResponseDto> findAll(Long id) {
         List<CoachingTime> coachingList = coachingTimeRepository.findAllCoachingTimeByTrainerId(id);
         return coachingTimeMapper.coachingTimeResponseToListDto(coachingList);
     }
 
-    /**
-     * Удалить запись в расписании тренера по идентификатору.
-     *
-     * @param id идентификатор записи в расписании тренера.
-     */
     @Override
     public void delete(Long id) {
         coachingTimeRepository.deleteById(id);
