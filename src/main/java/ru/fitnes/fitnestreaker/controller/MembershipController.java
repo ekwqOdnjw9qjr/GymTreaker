@@ -37,7 +37,7 @@ public class MembershipController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseWrapper<MembershipResponseDto> getMembershipById(@PathVariable @Min(1) Long id) {
-        return baseResponseService.wrapSuccessResponse(membershipServiceImpl.getById(id));
+        return baseResponseService.wrapSuccessResponse(membershipServiceImpl.getMembershipById(id));
     }
 
     @Operation(
@@ -47,7 +47,7 @@ public class MembershipController {
     @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseWrapper<List<MembershipResponseDto>> getAllMembership() {
-        return baseResponseService.wrapSuccessResponse(membershipServiceImpl.getAll());
+        return baseResponseService.wrapSuccessResponse(membershipServiceImpl.getAllMembership());
     }
 
     @Operation(
@@ -65,7 +65,7 @@ public class MembershipController {
     )
     @GetMapping("/membership/{id}/status")
     public ResponseWrapper<MembershipStatus> checkMembershipStatus(@PathVariable @Min(1) Long id) {
-        return baseResponseService.wrapSuccessResponse(membershipServiceImpl.checkStatus(id));
+        return baseResponseService.wrapSuccessResponse(membershipServiceImpl.checkMembershipStatus(id));
     }
 
     @Operation(
@@ -76,10 +76,15 @@ public class MembershipController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseWrapper<MembershipResponseDto> createMembership(@RequestBody MembershipRequestDto membershipRequestDto,
                                                                   MembershipType membershipType) {
-        return baseResponseService.wrapSuccessResponse(membershipServiceImpl.create(membershipRequestDto,
+        return baseResponseService.wrapSuccessResponse(membershipServiceImpl.createMembership(membershipRequestDto,
                 membershipType));
     }
 
+    @PatchMapping("/zxc/{id}")
+    public ResponseWrapper<MembershipResponseDto> activeMemberShip(
+            @RequestBody MembershipRequestDto membershipRequestDto, @PathVariable Long id) {
+        return baseResponseService.wrapSuccessResponse(membershipServiceImpl.activeMembership(id,membershipRequestDto));
+    }
     @Operation(
             summary = "Freeze your membership by membership ID",
             description = "Adds a certain number of days specified in the membership type to your subscription end date"
@@ -96,6 +101,6 @@ public class MembershipController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMembership(@PathVariable @Min(1) Long id) {
-        membershipServiceImpl.delete(id);
+        membershipServiceImpl.deleteMembership(id);
     }
 }

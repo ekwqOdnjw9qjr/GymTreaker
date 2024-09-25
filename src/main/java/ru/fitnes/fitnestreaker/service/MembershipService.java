@@ -22,7 +22,7 @@ public interface MembershipService {
      * @return информация об абонементе.
      * @throws LocalException если абонемент с указанным идентификатором не найден.
      */
-     MembershipResponseDto getById(Long id);
+     MembershipResponseDto getMembershipById(Long id);
 
     /**
      * Получение информации об абонементах аутентифицированного в данный момент пользователя.
@@ -36,7 +36,7 @@ public interface MembershipService {
      *
      * @return информация о всех абонементах в базе данных.
      */
-    List<MembershipResponseDto> getAll();
+    List<MembershipResponseDto> getAllMembership();
 
     /**
      * Создает новый абонемент для аутентифицированного в данный момент пользователя.
@@ -47,7 +47,7 @@ public interface MembershipService {
      * @param membershipType тип абонемента.
      * @return сохраненный абонемент.
      */
-     MembershipResponseDto create(MembershipRequestDto membershipRequestDto, MembershipType membershipType);
+     MembershipResponseDto createMembership(MembershipRequestDto membershipRequestDto, MembershipType membershipType);
 
     /**
      * Активация абонемента
@@ -67,14 +67,14 @@ public interface MembershipService {
      *     Абонемент с указанным идентификатором не найден,
      *     текущий пользователь не имеет доступа к данному абонементу.
      */
-     MembershipStatus checkStatus(Long id);
+     MembershipStatus checkMembershipStatus(Long id);
 
     /**
      * Удалить абонемент по идентификатору.
      *
      * @param id идентификатор абонемента.
      */
-     void delete(Long id);
+     void deleteMembership(Long id);
 
      /**
      * Замораживает абонемент пользователя на указанное количество дней.

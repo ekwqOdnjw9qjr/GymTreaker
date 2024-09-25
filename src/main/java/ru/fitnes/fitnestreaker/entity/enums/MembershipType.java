@@ -12,7 +12,8 @@ public enum MembershipType {
     MEDIUM(90L,30L),
     LARGE(120L,45L),
     QUARTERLY(180L,50L),
-    ANNUAL(360L,60L);
+    ANNUAL(360L,60L),
+    UNKNOWN(111L,777L);
 
     private final Long duration;
     private final Long freezeDays;

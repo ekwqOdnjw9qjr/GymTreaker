@@ -68,7 +68,7 @@ class MembershipControllerTest {
                 .freezingDays(10L)
                 .build();
 
-        given(membershipServiceImpl.getById(membershipId)).willReturn(membershipResponse);
+        given(membershipServiceImpl.getMembershipById(membershipId)).willReturn(membershipResponse);
 
         mockMvc.perform(get("/api/v1/memberships/{id}",membershipId)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -87,7 +87,7 @@ class MembershipControllerTest {
         MembershipStatus membershipStatus = MembershipStatus.ACTIVE;
 
 
-        given(membershipServiceImpl.checkStatus(membershipId)).willReturn(membershipStatus);
+        given(membershipServiceImpl.checkMembershipStatus(membershipId)).willReturn(membershipStatus);
 
 
         mockMvc.perform(get("/api/v1/memberships/membership/{id}/status", membershipId)
@@ -136,7 +136,7 @@ class MembershipControllerTest {
                 .freezingDays(10L)
                 .build();
 
-        given(membershipServiceImpl.create(membershipRequest, MembershipType.SMALL)).willReturn(membershipResponse);
+        given(membershipServiceImpl.createMembership(membershipRequest, MembershipType.SMALL)).willReturn(membershipResponse);
 
         mockMvc.perform(post("/api/v1/memberships")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -171,7 +171,7 @@ class MembershipControllerTest {
 
         List<MembershipResponseDto> membershipResponseDtoList = List.of(membership1, membership2);
 
-        given(membershipServiceImpl.getAll()).willReturn(membershipResponseDtoList);
+        given(membershipServiceImpl.getAllMembership()).willReturn(membershipResponseDtoList);
 
         mockMvc.perform(get("/api/v1/memberships")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -241,7 +241,7 @@ class MembershipControllerTest {
         mockMvc.perform(delete("/api/v1/memberships/{id}",membershipId))
                 .andExpect(status().isNoContent());
 
-        verify(membershipServiceImpl, times(1)).delete(1L);
+        verify(membershipServiceImpl, times(1)).deleteMembership(1L);
     }
 
 

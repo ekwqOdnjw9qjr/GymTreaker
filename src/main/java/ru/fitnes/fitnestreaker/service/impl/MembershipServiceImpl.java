@@ -33,7 +33,7 @@ public class MembershipServiceImpl implements MembershipService {
 
 
     @Override
-    public MembershipResponseDto getById(Long id) {
+    public MembershipResponseDto getMembershipById(Long id) {
         Membership membership = membershipRepository.findById(id)
                 .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,
                         String.format("Membership with id: %d not found.", id)));
@@ -51,13 +51,13 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Override
-    public List<MembershipResponseDto> getAll() {
+    public List<MembershipResponseDto> getAllMembership() {
         List<Membership> membershipList = membershipRepository.findAll();
         return membershipMapper.membershipResponseToListDto(membershipList);
     }
 
     @Override
-    public MembershipResponseDto create(MembershipRequestDto membershipRequestDto,MembershipType membershipType) {
+    public MembershipResponseDto createMembership(MembershipRequestDto membershipRequestDto,MembershipType membershipType) {
 
         Membership membership = membershipMapper.membershipRequestToEntity(membershipRequestDto);
 
@@ -151,7 +151,7 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Override
-    public MembershipStatus checkStatus(Long id) {
+    public MembershipStatus checkMembershipStatus(Long id) {
 
         Membership membership = membershipRepository.findById(id)
                 .orElseThrow(() -> new LocalException(ErrorType.NOT_FOUND,
@@ -173,7 +173,7 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteMembership(Long id) {
         membershipRepository.deleteById(id);
     }
 
@@ -183,8 +183,13 @@ public class MembershipServiceImpl implements MembershipService {
      * @param membership объект, который содержит информацию об абонементе.
      * @return дата окончания абонемента.
      */
-    private LocalDate calculateEndDate(Membership membership) {
-        MembershipType membershipType = null;
+    public LocalDate calculateEndDate(Membership membership) {
+
+        if (membership.getMembershipType() == null) {
+            throw new IllegalArgumentException("Membership type cannot be null");
+        }
+
+        MembershipType membershipType;
         switch (membership.getMembershipType()) {
             case SMALL -> membershipType = MembershipType.SMALL;
             case BASIC -> membershipType = MembershipType.BASIC;
@@ -192,9 +197,8 @@ public class MembershipServiceImpl implements MembershipService {
             case LARGE -> membershipType = MembershipType.LARGE;
             case QUARTERLY -> membershipType = MembershipType.QUARTERLY;
             case ANNUAL -> membershipType = MembershipType.ANNUAL;
-            default -> {
-                return null;
-            }
+            default -> throw new IllegalArgumentException("Unsupported membership type");
+
         }
         return membership.getStartDate().plusDays(membershipType.getDuration());
     }
